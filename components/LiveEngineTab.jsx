@@ -240,14 +240,12 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
     const cleanPhone = (customerPhone || '9011037537').replace(/[^0-9]/g, '');
     const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
-    const messageText = `Namaskar ${customerName}! 🙏
-
-Razorpay RevGuard AI automated recovery link for your pending order ₹${amount.toLocaleString('en-IN')}:
-
-Pay instantly via 1-click Razorpay checkout:
-${result.razorpayLink}
-
--- Razorpay RevGuard Recovery Engine`;
+    let messageText = result?.hinglishDialogue;
+    if (!messageText) {
+      messageText = `Namaste ${customerName}! 🙏\n\nRazorpay RevGuard AI automated recovery link for your pending order ₹${amount.toLocaleString('en-IN')}:\n\nPay instantly via 1-click Razorpay checkout:\n${result.razorpayLink}\n\n-- Razorpay RevGuard Recovery Engine`;
+    } else if (!messageText.includes(result.razorpayLink)) {
+      messageText = `${messageText}\n\n1-Click Pay Link: ${result.razorpayLink}`;
+    }
 
     return `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(messageText)}`;
   };

@@ -54,12 +54,20 @@ export default function WhatsAppModal({ isOpen, onClose, customerName, amount, p
               <span className="text-[9px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded">TEST MODE</span>
             </div>
 
-            <p className="text-gray-200 leading-relaxed text-xs">
-              Namaste <strong className="text-white">{customerName || 'Valued Customer'}</strong>! 🙏
-            </p>
-            <p className="text-gray-300 text-xs">
-              Aapka <strong className="text-white">₹{amount?.toLocaleString('en-IN') || 2499}</strong> ka payment retry fail ho gaya tha. Aap niche click karke instant UPI ya card se pay kar sakte hain.
-            </p>
+            {messageText ? (
+              <p className="text-gray-200 text-xs whitespace-pre-line leading-relaxed">
+                {messageText}
+              </p>
+            ) : (
+              <>
+                <p className="text-gray-200 leading-relaxed text-xs">
+                  Namaste <strong className="text-white">{customerName || 'Valued Customer'}</strong>! 🙏
+                </p>
+                <p className="text-gray-300 text-xs">
+                  Aapka <strong className="text-white">₹{amount?.toLocaleString('en-IN') || 2499}</strong> ka payment retry fail ho gaya tha. Aap niche click karke instant UPI ya card se pay kar sakte hain.
+                </p>
+              </>
+            )}
 
             {/* Payment Button inside WhatsApp */}
             <a

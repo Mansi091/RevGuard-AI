@@ -114,11 +114,11 @@ No markdown, no backticks. JSON only.`;
 
       if (eventType === "checkout.abandoned") {
         diagnosis = "User hesitated on checkout OTP screen for >40 seconds and exited.";
+        hinglishDialogue = `Namaste ${customerName || 'Customer'}! 🙏 Aapne cart checkout incomplete chor diya tha. Fast delivery ke liye instant 1-click Razorpay link se finish karein (₹${numAmount.toLocaleString('en-IN')}):`;
         if (isVoiceEligible) {
           action = `Initiate ${langName} AI Voice Bot call to offer instant 1-click UPI Link`;
           channel = `${langName} AI Voice`;
           explainability = `Order amount (₹${numAmount}) exceeds Voice threshold (₹${minVoiceAmount}). Personalized voice call converts high-intent buyers.`;
-          hinglishDialogue = greet(customerName || 'Customer', numAmount);
         } else {
           action = "Send SMS Nudge with Razorpay UPI Payment Link";
           channel = "SMS";
@@ -129,24 +129,26 @@ No markdown, no backticks. JSON only.`;
         action = "Schedule Mandate Smart Retry (+4 hours) & send WhatsApp renewal link";
         channel = "Smart Retry + WhatsApp";
         explainability = "Mandate failures due to bank downtime should not burn customer retries. Smart retry scheduled for off-peak bank window.";
-        hinglishDialogue = greet(customerName || 'Customer', numAmount);
+        hinglishDialogue = `Namaste ${customerName || 'Customer'}! 🙏 Aapka subscription auto-debit retry schedule ho gaya hai. Instant renewal link for ₹${numAmount.toLocaleString('en-IN')}:`;
       } else if (eventType === "invoice.overdue") {
         diagnosis = "B2B Invoice overdue by 10+ days. Accounts payable follow-up required.";
         action = "Conversational Voice Chaser -> Secure Promise-to-Pay (P2P) date";
         channel = "B2B Voice Chaser";
         explainability = "Direct phone reminder with automated P2P date logging pauses aggressive reminders and preserves client relationship.";
-        hinglishDialogue = greet(customerName || 'Customer', numAmount);
+        hinglishDialogue = `Namaste ${customerName || 'Customer'}! 🙏 Reminder for B2B Invoice ₹${numAmount.toLocaleString('en-IN')}. Please click to clear pending balance:`;
       } else {
         if (failureCode === "INSUFFICIENT_FUNDS") {
           diagnosis = "Customer card declined due to insufficient credit limit.";
           action = "Offer alternative Razorpay UPI / No-Cost EMI Payment Link";
           channel = "WhatsApp EMI Link";
           explainability = "Card limit issue detected. Switching payment method to UPI or EMI increases recovery rate by 40%.";
+          hinglishDialogue = `Namaste ${customerName || 'Customer'}! 🙏 Card limit decline. Alternate No-Cost EMI / UPI payment link for ₹${numAmount.toLocaleString('en-IN')}:`;
         } else {
           diagnosis = "Bank OTP timeout or network failure during 3DS verification.";
           action = "Send 1-Click Razorpay Payment Link via WhatsApp";
           channel = "WhatsApp UPI";
           explainability = "Transient network issue. Direct 1-click payment link bypasses standard cart flow.";
+          hinglishDialogue = `Namaste ${customerName || 'Customer'}! 🙏 Bank OTP timeout ki wajah se payment fail hua. Instant 1-click Razorpay retry link for ₹${numAmount.toLocaleString('en-IN')}:`;
         }
       }
     }
