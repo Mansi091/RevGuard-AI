@@ -233,42 +233,48 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
         </div>
 
         <div className="space-y-2">
-          {auditLogs.slice(0, 4).map((log) => (
-            <div key={log.id} className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="space-y-0.5 min-w-0">
-                <div className="flex items-center space-x-2 flex-wrap gap-y-1">
-                  <span className="text-xs font-bold text-slate-900">{log.customer}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-mono font-medium">{log.event}</span>
-                  <span className="text-xs font-extrabold text-emerald-700">
-                    ₹{log.amount?.toLocaleString('en-IN')}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-800 font-medium truncate">{log.action}</p>
-                <p className="text-[10px] text-slate-400 font-mono truncate">{log.explainability}</p>
-              </div>
-
-              <div className="flex items-center space-x-2 shrink-0">
-                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
-                  log.status === 'RECOVERED' ? 'bg-emerald-100 border-emerald-300 text-emerald-800' :
-                  log.status === 'P2P_RECORDED' ? 'bg-blue-100 border-blue-300 text-blue-800' :
-                  'bg-amber-100 border-amber-300 text-amber-800'
-                }`}>
-                  {log.status}
-                </span>
-                {log.razorpayLinkId && log.razorpayLinkId !== 'N/A' && (
-                  <a
-                    href={`https://razorpay.com/pay/${log.razorpayLinkId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="p-1 rounded bg-slate-200 hover:bg-slate-300 text-indigo-600 transition-colors"
-                    title="Open Razorpay Test Link"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                )}
-              </div>
+          {auditLogs.length === 0 ? (
+            <div className="p-6 text-center text-xs text-slate-500 rounded-lg bg-slate-50 border border-slate-200">
+              No live payment recovery events recorded yet. Run a scenario in Live Engine or trigger a Razorpay webhook to see real-time recovery logs.
             </div>
-          ))}
+          ) : (
+            auditLogs.slice(0, 5).map((log) => (
+              <div key={log.id} className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div className="space-y-0.5 min-w-0">
+                  <div className="flex items-center space-x-2 flex-wrap gap-y-1">
+                    <span className="text-xs font-bold text-slate-900">{log.customer}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-mono font-medium">{log.event}</span>
+                    <span className="text-xs font-extrabold text-emerald-700">
+                      ₹{log.amount?.toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-800 font-medium truncate">{log.action}</p>
+                  <p className="text-[10px] text-slate-400 font-mono truncate">{log.explainability}</p>
+                </div>
+
+                <div className="flex items-center space-x-2 shrink-0">
+                  <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
+                    log.status === 'RECOVERED' ? 'bg-emerald-100 border-emerald-300 text-emerald-800' :
+                    log.status === 'P2P_RECORDED' ? 'bg-blue-100 border-blue-300 text-blue-800' :
+                    'bg-amber-100 border-amber-300 text-amber-800'
+                  }`}>
+                    {log.status}
+                  </span>
+                  {log.razorpayLinkId && log.razorpayLinkId !== 'N/A' && (
+                    <a
+                      href={`https://razorpay.com/pay/${log.razorpayLinkId}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-1 rounded bg-slate-200 hover:bg-slate-300 text-indigo-600 transition-colors"
+                      title="Open Razorpay Test Link"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
