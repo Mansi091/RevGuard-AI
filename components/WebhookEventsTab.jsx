@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Radio, RefreshCw, Zap, AlertTriangle, CheckCircle2, Clock, Send, ChevronDown, ChevronUp, Globe } from 'lucide-react';
+import { Radio, RefreshCw, Zap, AlertTriangle, CheckCircle2, Clock, Send, ChevronDown, ChevronUp, Globe, Smartphone, ExternalLink } from 'lucide-react';
 
 export default function WebhookEventsTab({ onWebhookRecovery }) {
   const [events, setEvents] = useState([]);
