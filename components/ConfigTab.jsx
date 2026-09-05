@@ -107,23 +107,6 @@ export default function ConfigTab({ guardrails, setGuardrails }) {
                 />
                 <span>Pause Reminders on Promise-to-Pay (P2P) Record</span>
               </label>
-
-              {/* Flash Sale Mode Toggle */}
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-50 border border-amber-200 mt-2">
-                <input
-                  type="checkbox"
-                  id="flashSaleMode"
-                  checked={guardrails.flashSaleActive || false}
-                  onChange={(e) => setGuardrails(prev => ({
-                    ...prev,
-                    flashSaleActive: e.target.checked
-                  }))}
-                  className="w-4 h-4 accent-amber-600 rounded cursor-pointer shrink-0"
-                />
-                <label htmlFor="flashSaleMode" className="text-xs font-bold text-amber-900 cursor-pointer">
-                  🔥 Flash Sale Mode (Suspend Quiet Hours)
-                </label>
-              </div>
             </div>
           </div>
         </div>
