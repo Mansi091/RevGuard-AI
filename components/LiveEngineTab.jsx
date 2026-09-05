@@ -495,10 +495,8 @@ ${result.razorpayLink}
             </h3>
 
             {!result ? (
-              <div className="py-12 text-center text-slate-400 space-y-2">
-                <Zap className="w-8 h-8 mx-auto text-slate-300 stroke-[1.5]" />
-                <p className="text-xs font-medium text-slate-500">Configure parameters on the left and click "Execute Intervention Workflow"</p>
-                <p className="text-[11px] text-slate-400">The agent will diagnose the failure and generate a 1-click Razorpay payment link.</p>
+              <div className="py-8 text-center text-slate-500">
+                <p className="text-xs font-semibold text-slate-700">Select parameters on the left and click Execute to view live AI recovery results.</p>
               </div>
             ) : (
               <div className="space-y-4 text-xs">
