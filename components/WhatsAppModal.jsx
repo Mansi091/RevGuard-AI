@@ -3,8 +3,9 @@
 import React from 'react';
 import { X, CheckCheck, ExternalLink, ShieldCheck, Phone, Video, Send } from 'lucide-react';
 
-export default function WhatsAppModal({ isOpen, onClose, customerName, amount, paymentUrl, messageText }) {
+export default function WhatsAppModal({ isOpen, onClose, customerName, amount, paymentUrl, paymentLink, messageText }) {
   if (!isOpen) return null;
+  const activeLink = paymentLink || paymentUrl || 'https://razorpay.com';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn">
@@ -71,7 +72,7 @@ export default function WhatsAppModal({ isOpen, onClose, customerName, amount, p
 
             {/* Payment Button inside WhatsApp */}
             <a
-              href={paymentUrl || 'https://razorpay.com'}
+              href={activeLink}
               target="_blank"
               rel="noreferrer"
               className="mt-2 flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-xs transition-all"
