@@ -8,6 +8,7 @@ import WebhookEventsTab from '@/components/WebhookEventsTab';
 import BatchBenchmarkTab from '@/components/BatchBenchmarkTab';
 import AuditTrailTab from '@/components/AuditTrailTab';
 import ConfigTab from '@/components/ConfigTab';
+import StoreTab from '@/components/StoreTab';
 
 import { INITIAL_METRICS, INITIAL_GUARDRAILS, INITIAL_AUDIT_LOGS } from '@/lib/data';
 
@@ -180,6 +181,13 @@ export default function Home() {
               auditLogs={auditLogs}
               onSimulateEvent={handleSimulateEvent}
               onNavigateTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === 'mock-store' && (
+            <StoreTab
+              guardrails={guardrails}
+              onSimulateComplete={handleLiveInterventionComplete}
             />
           )}
 

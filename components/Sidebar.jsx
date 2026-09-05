@@ -1,11 +1,12 @@
 'use client';
 
 import React from 'react';
-import { ShieldCheck, Activity, Database, FileText, Settings, Zap, Radio } from 'lucide-react';
+import { ShieldCheck, Activity, Database, FileText, Settings, Zap, Radio, ShoppingBag } from 'lucide-react';
 
 export default function Sidebar({ activeTab, setActiveTab, metrics }) {
   const tabs = [
     { id: 'overview', label: 'Overview', desc: 'Dashboard & Metrics', icon: Activity },
+    { id: 'mock-store', label: 'Nykaa Mock Store', desc: 'Customer Checkout Demo', icon: ShoppingBag },
     { id: 'live-engine', label: 'Live Engine', desc: 'Interactive Recovery', icon: Zap },
     { id: 'webhooks', label: 'Webhooks', desc: 'Live Razorpay Events', icon: Radio },
     { id: 'batch-benchmark', label: 'Batch Test', desc: '50-Record Evaluation', icon: Database },
