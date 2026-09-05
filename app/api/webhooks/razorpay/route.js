@@ -94,6 +94,24 @@ export async function POST(request) {
             explainability: diagData.explainability,
           };
           eventRecord.status = 'AUTO_RECOVERY_TRIGGERED';
+
+          // Automatically send real WhatsApp message to customer phone via background API!
+          if (eventRecord.customerPhone) {
+            const payUrl = eventEntity.short_url || `https://rzp.io/rzp/b3Tv2mc`;
+            fetch(`${baseUrl}/api/whatsapp/send`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                toPhoneNumber: eventRecord.customerPhone,
+                customerName: eventRecord.customerName,
+                amount: eventRecord.amount,
+                paymentUrl: payUrl,
+                language: 'hi',
+              }),
+            }).then(r => r.json()).then(d => {
+              console.log('[Auto-Recovery] Background WhatsApp dispatched:', d);
+            }).catch(e => console.warn('[Auto-Recovery] Background WhatsApp failed:', e.message));
+          }
         }
       } catch (err) {
         console.warn('Auto-recovery failed for webhook event:', err.message);
