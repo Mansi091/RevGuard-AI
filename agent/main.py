@@ -31,6 +31,8 @@ from graph import recovery_agent
 # --- Request / Response Models ---
 
 class RecoveryRequest(BaseModel):
+    event_id: str = Field(default="", description="Unique event identifier for idempotency")
+    merchant_id: str = Field(default="merchant_default", description="Multi-tenant merchant ID")
     event_type: str = Field(default="payment.failed", description="Razorpay event type")
     failure_code: str = Field(default="BAD_REQUEST_PAYMENT_TIMED_OUT", description="Razorpay failure code")
     amount: float = Field(default=2499, description="Transaction amount in INR")
@@ -43,10 +45,14 @@ class RecoveryRequest(BaseModel):
     quiet_hours_start: int = Field(default=21, description="Quiet hours start (24h)")
     quiet_hours_end: int = Field(default=8, description="Quiet hours end (24h)")
     auto_halt_on_dnd: bool = Field(default=True, description="Auto-halt on DND")
+    voice_consent: bool = Field(default=True, description="Customer voice call consent")
+    thread_id: Optional[str] = Field(default=None, description="LangGraph execution thread ID for state resumption")
 
 
 class RecoveryResponse(BaseModel):
     success: bool
+    event_id: str
+    merchant_id: str
     event_type: str
     diagnosis: str
     action: str
@@ -79,7 +85,7 @@ app = FastAPI(
 # CORS — allow Next.js to call this
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -125,8 +131,13 @@ async def run_recovery(req: RecoveryRequest):
     This is the main endpoint that Next.js calls.
     """
     try:
+        event_id = req.event_id or f"evt_{int(datetime.now().timestamp()*1000)}"
+        thread_id = req.thread_id or f"thread_{event_id}"
+
         # Prepare initial state
         initial_state = {
+            "event_id": event_id,
+            "merchant_id": req.merchant_id,
             "event_type": req.event_type,
             "failure_code": req.failure_code,
             "amount": req.amount,
@@ -139,6 +150,7 @@ async def run_recovery(req: RecoveryRequest):
             "quiet_hours_start": req.quiet_hours_start,
             "quiet_hours_end": req.quiet_hours_end,
             "auto_halt_on_dnd": req.auto_halt_on_dnd,
+            "voice_consent": req.voice_consent,
             # Initialize working memory
             "diagnosis": "",
             "risk_score": 0,
@@ -160,11 +172,14 @@ async def run_recovery(req: RecoveryRequest):
             "final_status": "",
         }
 
-        # Run the LangGraph agent
-        final_state = await recovery_agent.ainvoke(initial_state)
+        # Run the LangGraph agent with thread configuration for persistence/resumption
+        config = {"configurable": {"thread_id": thread_id}}
+        final_state = await recovery_agent.ainvoke(initial_state, config=config)
 
         return RecoveryResponse(
             success=True,
+            event_id=final_state.get("event_id", event_id),
+            merchant_id=final_state.get("merchant_id", req.merchant_id),
             event_type=final_state.get("event_type", req.event_type),
             diagnosis=final_state.get("diagnosis", ""),
             action=final_state.get("chosen_action", ""),

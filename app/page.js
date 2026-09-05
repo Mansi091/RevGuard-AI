@@ -20,10 +20,13 @@ export default function Home() {
   // Trigger quick simulation event from Overview
   const handleSimulateEvent = async (eventType) => {
     try {
+      const eventId = `sim-${Date.now()}`;
       const diagRes = await fetch('/api/recovery/diagnose', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          eventId,
+          merchantId: 'merchant_default',
           eventType,
           failureCode: 'BAD_REQUEST_PAYMENT_TIMED_OUT',
           amount: 3499,

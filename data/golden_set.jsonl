@@ -1,0 +1,7 @@
+{"id": "eval_001", "event_type": "payment.failed", "failure_code": "INSUFFICIENT_FUNDS", "amount": 2499.0, "customer_name": "Aarav Patel", "language": "hi", "expected_channel": "WhatsApp UPI", "expected_guardrail": true}
+{"id": "eval_002", "event_type": "payment.failed", "failure_code": "BAD_REQUEST_PAYMENT_TIMED_OUT", "amount": 1500.0, "customer_name": "Priya Sharma", "language": "en", "expected_channel": "WhatsApp UPI", "expected_guardrail": true}
+{"id": "eval_003", "event_type": "checkout.abandoned", "failure_code": "USER_EXIT", "amount": 3500.0, "customer_name": "Vikram Singh", "language": "mr", "expected_channel": "Voice Call", "expected_guardrail": true}
+{"id": "eval_004", "event_type": "checkout.abandoned", "failure_code": "USER_EXIT", "amount": 250.0, "customer_name": "Rohan Das", "language": "hi", "expected_channel": "WhatsApp UPI", "expected_guardrail": true}
+{"id": "eval_005", "event_type": "subscription.halted", "failure_code": "MANDATE_DECLINED", "amount": 999.0, "customer_name": "Ananya Roy", "language": "bn", "expected_channel": "WhatsApp UPI", "expected_guardrail": true}
+{"id": "eval_006", "event_type": "invoice.overdue", "failure_code": "OVERDUE_14D", "amount": 15000.0, "customer_name": "TechCorp India", "language": "en", "expected_channel": "Voice Call", "expected_guardrail": true}
+{"id": "eval_007", "event_type": "payment.failed", "failure_code": "BAD_REQUEST_PAYMENT_TIMED_OUT", "amount": 2499.0, "customer_name": "Kavita Nair", "language": "ta", "voice_consent": false, "expected_channel": "WhatsApp UPI", "expected_guardrail": true}

@@ -8,7 +8,53 @@ import os
 import json
 import httpx
 import base64
+import hmac
+import hashlib
 from datetime import datetime
+
+
+class AsyncCircuitBreaker:
+    """Circuit breaker pattern for external API calls (Razorpay, OpenRouter, Sarvam, Twilio)."""
+    def __init__(self, failure_threshold: int = 3, recovery_time: float = 30.0):
+        self.failure_threshold = failure_threshold
+        self.recovery_time = recovery_time
+        self.failure_count = 0
+        self.state = "CLOSED"  # CLOSED, OPEN, HALF-OPEN
+        self.last_state_change = datetime.now()
+
+    def record_success(self):
+        self.failure_count = 0
+        self.state = "CLOSED"
+
+    def record_failure(self):
+        self.failure_count += 1
+        if self.failure_count >= self.failure_threshold:
+            self.state = "OPEN"
+            self.last_state_change = datetime.now()
+
+    def can_execute(self) -> bool:
+        if self.state == "OPEN":
+            if (datetime.now() - self.last_state_change).total_seconds() > self.recovery_time:
+                self.state = "HALF-OPEN"
+                return True
+            return False
+        return True
+
+
+openrouter_breaker = AsyncCircuitBreaker()
+razorpay_breaker = AsyncCircuitBreaker()
+sarvam_breaker = AsyncCircuitBreaker()
+twilio_breaker = AsyncCircuitBreaker()
+
+
+def verify_razorpay_signature(raw_body: bytes, signature: str, secret: str) -> bool:
+    """
+    Verifies Razorpay Webhook HMAC-SHA256 signature.
+    """
+    if not secret or not signature:
+        return False
+    expected = hmac.new(secret.encode("utf-8"), raw_body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, signature)
 
 
 async def tool_diagnose_failure(event_type: str, failure_code: str, amount: float, customer_name: str, language: str = "hi") -> dict:
@@ -80,26 +126,63 @@ No markdown, no backticks. JSON only."""
             print(f"[Tool:diagnose] LLM fallback: {e}")
 
     # Rule-based fallback
+    channel = "WhatsApp UPI"
+    action = "Send 1-Click Razorpay Payment Link via WhatsApp"
+    explainability = "Transient failure detected. Direct payment link bypasses standard cart flow."
+
+    if event_type == "checkout.abandoned":
+        if amount >= 500:
+            channel = "Voice Call"
+            action = "Initiate AI Voice Bot call to offer instant 1-click UPI link"
+            explainability = f"High-intent checkout abandonment (₹{amount}). Personalized voice outreach converts fast."
+        else:
+            channel = "WhatsApp UPI"
+            action = "Send WhatsApp Nudge with Razorpay UPI Payment Link"
+            explainability = f"Order amount ₹{amount} is below voice threshold. WhatsApp nudge minimizes outreach cost."
+    elif event_type == "invoice.overdue":
+        channel = "Voice Call"
+        action = "Conversational Voice Chaser -> Secure Promise-to-Pay (P2P) date"
+        explainability = "B2B invoice overdue. Direct phone reminder with automated P2P date logging preserves client relationship."
+    elif event_type == "subscription.halted":
+        channel = "WhatsApp UPI"
+        action = "Schedule Mandate Smart Retry (+4 hours) & send WhatsApp renewal link"
+        explainability = "Mandate failure due to bank downtime. Smart retry scheduled for off-peak bank window."
+    elif failure_code == "INSUFFICIENT_FUNDS":
+        channel = "WhatsApp UPI"
+        action = "Offer alternative Razorpay UPI / No-Cost EMI Payment Link"
+        explainability = "Card limit issue detected. Switching payment method to UPI or EMI increases recovery rate."
+
     diagnosis_map = {
         "INSUFFICIENT_FUNDS": "Card declined due to insufficient credit limit.",
         "BAD_REQUEST_PAYMENT_TIMED_OUT": "Bank OTP timeout or network failure during 3DS verification.",
         "GATEWAY_DOWNTIME": "Bank payment gateway is temporarily offline.",
         "BAD_REQUEST_PAYMENT_DECLINED": "Payment was declined by the issuing bank.",
+        "USER_EXIT": "User hesitated on checkout OTP screen for >40 seconds and exited.",
+        "OVERDUE_14D": "B2B Invoice overdue by 10+ days. Accounts payable follow-up required.",
     }
+
     return {
         "diagnosis": diagnosis_map.get(failure_code, "Transaction failed during authorization."),
-        "action": "Send 1-Click Razorpay Payment Link via WhatsApp",
-        "channel": "WhatsApp UPI",
+        "action": action,
+        "channel": channel,
         "risk_score": 70,
-        "explainability": "Transient failure detected. Direct payment link bypasses standard cart flow.",
+        "explainability": explainability,
         "dialogue": f"Namaste {customer_name}! Aapka ₹{amount} ka payment pending hai. UPI link bhej doon?",
         "is_llm": False,
     }
 
 
-async def tool_create_payment_link(amount: float, customer_name: str, customer_phone: str = "", description: str = "") -> dict:
+async def tool_create_payment_link(
+    amount: float,
+    customer_name: str,
+    customer_phone: str = "",
+    description: str = "",
+    idempotency_key: str = "",
+    metadata: dict = None,
+) -> dict:
     """
     Creates a Razorpay payment link using the Payment Links API.
+    Supports X-Idempotency-Key to prevent duplicate creation on retries.
     """
     rzp_key = os.getenv("RAZORPAY_KEY_ID", "")
     rzp_secret = os.getenv("RAZORPAY_KEY_SECRET", "")
@@ -107,25 +190,33 @@ async def tool_create_payment_link(amount: float, customer_name: str, customer_p
     if rzp_key and rzp_secret and rzp_key.startswith("rzp_"):
         try:
             auth = base64.b64encode(f"{rzp_key}:{rzp_secret}".encode()).decode()
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Basic {auth}",
+            }
+            if idempotency_key:
+                headers["X-Idempotency-Key"] = idempotency_key
+
+            payload = {
+                "amount": int(amount * 100),
+                "currency": "INR",
+                "description": description or f"RevGuard Recovery for {customer_name}",
+                "customer": {
+                    "name": customer_name,
+                    "contact": customer_phone,
+                },
+                "reminder_enable": True,
+            }
+            if metadata:
+                payload["notes"] = metadata
+
             async with httpx.AsyncClient(timeout=10.0) as client:
                 resp = await client.post(
                     "https://api.razorpay.com/v1/payment_links",
-                    headers={
-                        "Content-Type": "application/json",
-                        "Authorization": f"Basic {auth}",
-                    },
-                    json={
-                        "amount": int(amount * 100),
-                        "currency": "INR",
-                        "description": description or f"RevGuard Recovery for {customer_name}",
-                        "customer": {
-                            "name": customer_name,
-                            "contact": customer_phone,
-                        },
-                        "reminder_enable": True,
-                    },
+                    headers=headers,
+                    json=payload,
                 )
-                if resp.status_code == 200:
+                if resp.status_code in (200, 201):
                     data = resp.json()
                     return {
                         "url": data.get("short_url", ""),

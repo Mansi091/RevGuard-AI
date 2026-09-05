@@ -105,11 +105,16 @@ async def guardrail_check_node(state: AgentState) -> dict:
             blocked = True
             reason = f"Blocked: Quiet hours active ({quiet_start}:00 - {quiet_end}:00)."
 
-    # Check voice eligibility — downgrade to WhatsApp if below threshold
+    # Check voice eligibility — downgrade to WhatsApp if below threshold or consent missing
     chosen_channel = state.get("chosen_channel", "WhatsApp UPI")
-    if "Voice" in chosen_channel and amount < min_voice:
-        chosen_channel = "WhatsApp UPI"
-        reason += f" Voice downgraded to WhatsApp: amount ₹{amount} < threshold ₹{min_voice}."
+    voice_consent = state.get("voice_consent", True)
+    if "Voice" in chosen_channel:
+        if amount < min_voice:
+            chosen_channel = "WhatsApp UPI"
+            reason += f" Voice downgraded to WhatsApp: amount ₹{amount} < threshold ₹{min_voice}."
+        elif not voice_consent:
+            chosen_channel = "WhatsApp UPI"
+            reason += " Voice downgraded to WhatsApp: voice consent missing (DND/opt-out)."
 
     trace_entry = {
         "node": "GUARDRAIL_CHECK",
@@ -132,7 +137,7 @@ async def guardrail_check_node(state: AgentState) -> dict:
 async def execute_node(state: AgentState) -> dict:
     """
     NODE 4: EXECUTE
-    Executes the chosen recovery action — creates payment link,
+    Executes the chosen recovery action — creates payment link with idempotency key,
     sends WhatsApp, generates voice audio.
     """
     if not state.get("guardrail_passed", True):
@@ -148,12 +153,18 @@ async def execute_node(state: AgentState) -> dict:
             "agent_trace": existing_trace + [trace_entry],
         }
 
+    # Generate idempotency key so retries don't create duplicate payment links
+    event_id = state.get("event_id", "") or f"{state.get('event_type')}:{state.get('amount')}:{state.get('customer_name')}"
+    idempotency_key = f"revguard:{hash(event_id) % 10**8}:{state.get('max_retries', 2)}"
+
     # Step 1: Create Razorpay payment link
     link_result = await tool_create_payment_link(
         amount=state.get("amount", 1000),
         customer_name=state.get("customer_name", "Customer"),
         customer_phone=state.get("customer_phone", ""),
         description=f"RevGuard Recovery: {state.get('event_type', 'payment.failed')}",
+        idempotency_key=idempotency_key,
+        metadata={"revguard_event_id": event_id, "merchant_id": state.get("merchant_id", "merchant_default")},
     )
 
     payment_url = link_result.get("url", "")
@@ -182,7 +193,7 @@ async def execute_node(state: AgentState) -> dict:
     trace_entry = {
         "node": "EXECUTE",
         "timestamp": datetime.now().isoformat(),
-        "message": f"Payment link created: {payment_url} | WhatsApp sent: {wa_result.get('sent')} | Voice generated: {voice_result.get('generated')}",
+        "message": f"Payment link created (key: {idempotency_key[:12]}...): {payment_url} | WhatsApp sent: {wa_result.get('sent')} | Voice generated: {voice_result.get('generated')}",
     }
 
     existing_trace = state.get("agent_trace", [])
@@ -201,20 +212,36 @@ async def execute_node(state: AgentState) -> dict:
     }
 
 
+def redact_pii(text: str) -> str:
+    """Masks phone numbers and emails in log strings for GDPR/DPDP compliance."""
+    import re
+    if not text:
+        return ""
+    # Redact phone numbers (10+ digits)
+    text = re.sub(r'(\+?\d{2})?(\d{2})\d{4,6}(\d{2,3})', r'\1 \2*** **\3', text)
+    # Redact email addresses
+    text = re.sub(r'(\b[A-Za-z0-9._%+-]+)(@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b)', lambda m: m.group(1)[0] + '***' + m.group(1)[-1] + m.group(2) if len(m.group(1)) > 2 else '***' + m.group(2), text)
+    return text
+
+
 async def audit_node(state: AgentState) -> dict:
     """
     NODE 5: AUDIT
-    Creates a complete audit log entry with full explainability.
+    Creates a complete audit log entry with full explainability and PII redaction.
     """
     trace = state.get("agent_trace", [])
+    cust_phone = redact_pii(state.get("customer_phone", ""))
+    cust_email = redact_pii(state.get("customer_email", ""))
 
     audit_lines = [
         "═══════════════════════════════════════════",
         f"  REVGUARD AI — AUDIT TRAIL",
         f"  Timestamp: {datetime.now().isoformat()}",
         "═══════════════════════════════════════════",
-        f"  Event:       {state.get('event_type', 'unknown')}",
-        f"  Customer:    {state.get('customer_name', 'N/A')}",
+        f"  Event ID:    {state.get('event_id', 'N/A')}",
+        f"  Merchant ID: {state.get('merchant_id', 'N/A')}",
+        f"  Event Type:  {state.get('event_type', 'unknown')}",
+        f"  Customer:    {state.get('customer_name', 'N/A')} ({cust_phone})",
         f"  Amount:      ₹{state.get('amount', 0)}",
         f"  Language:    {state.get('language', 'hi')}",
         "───────────────────────────────────────────",
@@ -235,7 +262,8 @@ async def audit_node(state: AgentState) -> dict:
     ]
 
     for step in trace:
-        audit_lines.append(f"    [{step.get('node', '?')}] {step.get('timestamp', '')} — {step.get('message', '')}")
+        msg = redact_pii(step.get('message', ''))
+        audit_lines.append(f"    [{step.get('node', '?')}] {step.get('timestamp', '')} — {msg}")
 
     audit_lines.append("═══════════════════════════════════════════")
     audit_log = "\n".join(audit_lines)

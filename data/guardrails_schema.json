@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MerchantGuardrailsConfig",
+  "type": "object",
+  "properties": {
+    "merchant_id": {
+      "type": "string",
+      "description": "Unique Razorpay merchant identifier"
+    },
+    "max_retries": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "default": 2,
+      "description": "Maximum outreach attempts per failed transaction"
+    },
+    "min_voice_amount": {
+      "type": "number",
+      "minimum": 0,
+      "default": 500,
+      "description": "Minimum transaction amount in INR required for AI Voice call"
+    },
+    "quiet_hours_start": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 23,
+      "default": 21,
+      "description": "Hour of day (24h format) when quiet hours begin"
+    },
+    "quiet_hours_end": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 23,
+      "default": 8,
+      "description": "Hour of day (24h format) when quiet hours end"
+    },
+    "auto_halt_on_dnd": {
+      "type": "boolean",
+      "default": true,
+      "description": "Automatically halt voice outreach if customer has DND/opt-out active"
+    },
+    "allowed_languages": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": ["hi", "en", "ta", "te", "kn", "mr", "bn", "gu"],
+      "description": "Supported languages for AI Voice Bot"
+    }
+  },
+  "required": ["merchant_id", "max_retries", "min_voice_amount"]
+}

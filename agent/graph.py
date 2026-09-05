@@ -9,6 +9,7 @@ Graph Flow:
 """
 
 from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
 from state import AgentState
 from nodes import (
     detect_node,
@@ -71,8 +72,9 @@ def build_recovery_graph() -> StateGraph:
     graph.add_edge("execute", "audit")
     graph.add_edge("audit", END)
 
-    # Compile the graph
-    compiled = graph.compile()
+    # Compile the graph with MemorySaver checkpointer for thread persistence & resumption
+    checkpointer = MemorySaver()
+    compiled = graph.compile(checkpointer=checkpointer)
     return compiled
 
 

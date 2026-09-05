@@ -11,6 +11,8 @@ class AgentState(TypedDict):
     """The state that flows through the LangGraph recovery agent."""
 
     # --- Input (from webhook/frontend) ---
+    event_id: str                # Unique webhook/transaction event ID for idempotency
+    merchant_id: str             # Multi-tenant merchant ID
     event_type: str              # payment.failed, checkout.abandoned, subscription.halted, invoice.overdue
     failure_code: str            # Razorpay error code e.g. INSUFFICIENT_FUNDS
     amount: float                # Transaction amount in INR
@@ -25,6 +27,7 @@ class AgentState(TypedDict):
     quiet_hours_start: int       # 20 = 8PM
     quiet_hours_end: int         # 8 = 8AM
     auto_halt_on_dnd: bool
+    voice_consent: bool          # Voice outreach consent flag
 
     # --- Agent Working Memory (filled by nodes) ---
     diagnosis: str               # Root cause analysis
