@@ -9,11 +9,12 @@ export async function POST(request) {
     const amountInPaisa = Math.round(numAmount * 100);
     const referenceId = `rev_rec_${Date.now()}`;
 
-    // If actual Razorpay credentials are passed or in ENV
+    // Active Razorpay Credentials
     const activeKey = keyId || process.env.RAZORPAY_KEY_ID;
     const activeSecret = keySecret || process.env.RAZORPAY_KEY_SECRET;
 
-    if (activeKey && activeSecret && activeKey !== 'rzp_test_xxxxxxx') {
+    // Only attempt live Razorpay API call if real credentials (not placeholders) are provided
+    if (activeKey && activeSecret && activeKey !== 'rzp_test_xxxxxxx' && activeSecret !== '••••••••••••••••') {
       try {
         const authHeader = 'Basic ' + Buffer.from(`${activeKey}:${activeSecret}`).toString('base64');
         const rzpResponse = await fetch('https://api.razorpay.com/v1/payment_links', {
@@ -41,13 +42,13 @@ export async function POST(request) {
               source: 'RevGuard_AI_Recovery_Agent',
               reference_id: referenceId,
             },
-            callback_url: 'https://razorpay.com',
+            callback_url: 'http://localhost:3000',
             callback_method: 'get',
           }),
         });
 
         const data = await rzpResponse.json();
-        if (rzpResponse.ok) {
+        if (rzpResponse.ok && data.short_url) {
           return NextResponse.json({
             success: true,
             paymentLinkId: data.id,
@@ -58,13 +59,13 @@ export async function POST(request) {
           });
         }
       } catch (err) {
-        console.warn('Razorpay API call failed, falling back to simulated link:', err);
+        console.warn('Razorpay API call failed, switching to internal test checkout simulator:', err);
       }
     }
 
-    // High-fidelity fallback / simulated test-mode link
+    // High-fidelity local sandbox link
     const simulatedId = `plink_${Math.random().toString(36).substring(2, 10)}`;
-    const simulatedUrl = `https://razorpay.com/pay/${simulatedId}?amount=${numAmount}`;
+    const simulatedUrl = `http://localhost:3000?pay=${simulatedId}&amount=${numAmount}`;
 
     return NextResponse.json({
       success: true,
@@ -73,7 +74,7 @@ export async function POST(request) {
       status: 'created',
       amount: numAmount,
       isLiveApi: false,
-      message: 'Razorpay Test-Mode Payment Link Generated',
+      message: 'Razorpay Test Sandbox Link Generated',
     });
   } catch (error) {
     return NextResponse.json(

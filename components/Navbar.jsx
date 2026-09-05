@@ -26,11 +26,7 @@ export default function Navbar({ activeTab, setActiveTab, liveMode }) {
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-bold text-lg tracking-tight text-white">RevGuard <span className="text-cyan-400">AI</span></span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider bg-cyan-950 text-cyan-400 px-2 py-0.5 rounded-full border border-cyan-800/50">
-                  Track 03
-                </span>
               </div>
-              <p className="text-xs text-gray-400">Razorpay AI Revenue Recovery Engine</p>
             </div>
           </div>
 
