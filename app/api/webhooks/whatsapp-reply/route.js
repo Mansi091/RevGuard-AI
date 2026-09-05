@@ -9,7 +9,7 @@ import { evaluatePolicyRules, DEFAULT_POLICY_RULES } from '@/lib/policyEngine';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { fromPhone, customerName = 'Valued Customer', productName = 'Wireless Headphones', incomingText = '', amount = 2499, merchantPolicy = DEFAULT_POLICY_RULES } = body;
+    const { fromPhone, customerName = 'Valued Customer', productName = 'Nykaa Matte Lipstick Box', incomingText = '', amount = 2499, merchantPolicy = DEFAULT_POLICY_RULES } = body;
 
     const textLower = incomingText.toLowerCase();
     let objectionType = 'GENERAL_INQUIRY';

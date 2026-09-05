@@ -86,7 +86,7 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
           body: JSON.stringify({
             fromPhone: customerPhone,
             customerName: customerName,
-            productName: 'Wireless Headphones Order',
+            productName: 'Nykaa Matte Lipstick Box',
             incomingText: inboundReply,
             amount: amount,
           }),
