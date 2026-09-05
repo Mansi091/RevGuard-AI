@@ -29,10 +29,10 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
               <span>🚀 Run Live Demo →</span>
             </button>
             <button
-              onClick={() => onNavigateTab('batch-benchmark')}
+              onClick={() => onNavigateTab('webhooks')}
               className="flex items-center space-x-1 text-xs font-medium text-slate-400 hover:text-slate-200 transition-all cursor-pointer"
             >
-              <span>50-Batch Test</span>
+              <span>Razorpay Webhooks</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-slate-500" />
             </button>
           </div>

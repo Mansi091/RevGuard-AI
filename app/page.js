@@ -242,12 +242,6 @@ export default function Home() {
             />
           )}
 
-          {activeTab === 'batch-benchmark' && (
-            <BatchBenchmarkTab
-              onBatchRunComplete={handleBatchRunComplete}
-            />
-          )}
-
           {activeTab === 'audit-trail' && (
             <AuditTrailTab
               auditLogs={auditLogs}

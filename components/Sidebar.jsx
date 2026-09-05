@@ -8,7 +8,6 @@ export default function Sidebar({ activeTab, setActiveTab, metrics }) {
     { id: 'overview', label: 'Overview', desc: 'Dashboard & Metrics', icon: Activity },
     { id: 'live-engine', label: 'Live Engine', desc: 'Interactive Recovery', icon: Zap },
     { id: 'webhooks', label: 'Webhooks', desc: 'Live Razorpay Events', icon: Radio },
-    { id: 'batch-benchmark', label: 'Batch Test', desc: '50-Record Evaluation', icon: Database },
     { id: 'audit-trail', label: 'Audit Trail', desc: 'Activity Logs', icon: FileText },
     { id: 'config', label: 'Settings', desc: 'Guardrails & Keys', icon: Settings },
   ];
