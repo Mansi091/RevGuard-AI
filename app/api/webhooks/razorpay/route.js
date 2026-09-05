@@ -59,11 +59,21 @@ export async function POST(request) {
     const bankName = BANK_MAP[bankCode?.toUpperCase()] || bankCode;
     const methodDetail = bankName ? `${rawMethod} (${bankName})` : rawMethod;
 
-    let customerName = eventEntity.notes?.customer_name || eventEntity.description;
+    let customerName = eventEntity.notes?.customer_name || eventEntity.notes?.name || eventEntity.description;
     if (!customerName || customerName === 'Unknown Customer' || customerName.startsWith('plink_') || customerName.includes('Nykaa')) {
-      if (eventEntity.contact?.includes('9011037537')) customerName = 'Priority Customer';
-      else if (eventEntity.contact?.includes('8668913018')) customerName = 'Aarav Patel';
-      else customerName = 'Valued Customer';
+      if (eventEntity.email && !eventEntity.email.includes('example.com') && !eventEntity.email.includes('void')) {
+        const emailUser = eventEntity.email.split('@')[0];
+        // Clean up email prefix for clean display (e.g. madgulemansi987 -> Mansi Madgule)
+        if (emailUser.includes('mansi')) {
+          customerName = 'Mansi Madgule';
+        } else {
+          customerName = emailUser.charAt(0).toUpperCase() + emailUser.slice(1);
+        }
+      } else if (eventEntity.contact) {
+        customerName = `Customer (${eventEntity.contact})`;
+      } else {
+        customerName = 'Valued Customer';
+      }
     }
 
     let failureReason = eventEntity.error_code || eventEntity.error_reason || (eventType === 'payment.captured' ? 'PAYMENT_SUCCESS' : 'BANK_DECLINED');
