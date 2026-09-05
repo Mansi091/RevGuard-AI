@@ -114,18 +114,18 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
       </div>
 
       {/* Proactive Opportunity Prediction Engine (Pillar 1) */}
-      <div className="bg-indigo-900 text-white rounded-xl p-4 shadow-sm border border-indigo-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-start space-x-3">
-          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-indigo-200 text-xs font-bold shrink-0 mt-0.5">
-            🔮
+      <div className="bg-slate-900 text-white rounded-xl p-4 shadow-xs border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center space-x-3">
+          <div className="w-7 h-7 rounded-lg bg-indigo-600/30 text-indigo-400 flex items-center justify-center shrink-0">
+            <Clock className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
               <span className="font-bold text-xs text-white">Proactive Predictor: 2 Cards Expiring in 7 Days</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-800 text-indigo-300 font-mono font-semibold">₹23,998 AT RISK</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-900/60 text-indigo-300 font-mono font-semibold border border-indigo-700/50">₹23,998 AT RISK</span>
             </div>
-            <p className="text-xs text-indigo-200 leading-relaxed mt-0.5">
-              RevGuard AI proactively detected 2 upcoming card expiries before payment failure occurs. Pre-emptive renewal links ready to dispatch.
+            <p className="text-xs text-slate-400 mt-0.5">
+              Detected 2 upcoming card expiries. Pre-emptive renewal links ready to dispatch.
             </p>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
           onClick={() => onNavigateTab('live-engine')}
           className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shrink-0 transition-all cursor-pointer"
         >
-          Dispatch Proactive Links →
+          Dispatch Links →
         </button>
       </div>
 
