@@ -311,7 +311,7 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
                         {event.customerPhone && (
                           <div className="pt-2">
                             <a
-                              href={`https://wa.me/${event.customerPhone.replace('+', '')}?text=${encodeURIComponent(`Namaste! 🙏\n\nRazorpay RevGuard AI se reminder. Aapka ₹${event.amount} ka payment retry fail ho gaya tha.\nInstant pay link: https://rzp.io/rzp/6JWQY2U\n\n-- Razorpay Automated Recovery`)}`}
+                              href={`https://api.whatsapp.com/send?phone=${event.customerPhone.replace('+', '').replace(/\s+/g, '')}&text=${encodeURIComponent(`Namaste! 🙏\n\nRazorpay RevGuard AI se reminder. Aapka ₹${event.amount} ka payment retry fail ho gaya tha.\nInstant pay link: https://rzp.io/rzp/6JWQY2U\n\n-- Razorpay Automated Recovery`)}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all"

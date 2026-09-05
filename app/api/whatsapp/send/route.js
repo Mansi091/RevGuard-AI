@@ -89,10 +89,46 @@ export async function POST(request) {
             message: `Real WhatsApp message sent in ${language.toUpperCase()} to ${formattedTo} via Twilio API!`,
           });
         } else {
-          console.warn('Twilio API returned info:', twilioData);
-          const cleanPhone = formattedTo.replace('whatsapp:', '').replace('+', '');
+          console.warn('Twilio WhatsApp returned info:', twilioData);
+
+          // Try sending direct Twilio SMS fallback to phone number
+          try {
+            const rawPhone = formattedTo.replace('whatsapp:', '');
+            const smsFrom = activeFrom.replace('whatsapp:', '');
+            const smsParams = new URLSearchParams();
+            smsParams.append('From', smsFrom);
+            smsParams.append('To', rawPhone);
+            smsParams.append('Body', messageBody);
+
+            const smsRes = await fetch(twilioUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': authHeader,
+              },
+              body: smsParams.toString(),
+            });
+            const smsData = await smsRes.json();
+            if (smsRes.ok) {
+              return NextResponse.json({
+                success: true,
+                isRealSent: true,
+                sid: smsData.sid,
+                status: smsData.status,
+                to: rawPhone,
+                language,
+                message: `Real SMS message sent in ${language.toUpperCase()} to ${rawPhone} via Twilio SMS API!`,
+              });
+            } else {
+              console.warn('Twilio SMS fallback returned:', smsData);
+            }
+          } catch (smsErr) {
+            console.warn('Twilio SMS fallback error:', smsErr.message);
+          }
+
+          const cleanPhone = formattedTo.replace('whatsapp:', '').replace('+', '').replace(/\s+/g, '');
           const encodedMsg = encodeURIComponent(messageBody);
-          const waLink = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
+          const waLink = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMsg}`;
           return NextResponse.json({
             success: true,
             isRealSent: false,
