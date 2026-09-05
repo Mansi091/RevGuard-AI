@@ -13,9 +13,39 @@ import { INITIAL_METRICS, INITIAL_GUARDRAILS, INITIAL_AUDIT_LOGS } from '@/lib/d
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('overview');
-  const [metrics, setMetrics] = useState(INITIAL_METRICS);
   const [guardrails, setGuardrails] = useState(INITIAL_GUARDRAILS);
   const [auditLogs, setAuditLogs] = useState(INITIAL_AUDIT_LOGS);
+
+  // Compute metrics 100% dynamically from actual live audit logs table
+  const metrics = React.useMemo(() => {
+    let totalRisk = 0;
+    let totalRecovered = 0;
+    let failedCount = auditLogs.length;
+    let recoveredCount = 0;
+    let stoppedCount = 0;
+
+    for (const log of auditLogs) {
+      const amt = Number(log.amount) || 0;
+      totalRisk += amt;
+      if (log.status === 'RECOVERED' || log.status === 'WEBHOOK_RECOVERED') {
+        totalRecovered += (Number(log.recoveredAmount) !== undefined ? Number(log.recoveredAmount) : amt);
+        recoveredCount += 1;
+      } else if (log.status === 'STOPPED') {
+        stoppedCount += 1;
+      }
+    }
+
+    const recoveryRate = totalRisk > 0 ? Number(((totalRecovered / totalRisk) * 100).toFixed(1)) : 0;
+
+    return {
+      totalRisk,
+      totalRecovered,
+      recoveryRate,
+      failedCount,
+      recoveredCount,
+      stoppedCount,
+    };
+  }, [auditLogs]);
 
   // Poll live Razorpay webhook events to auto-populate OverviewTab & AuditTrailTab
   useEffect(() => {
@@ -109,19 +139,6 @@ export default function Home() {
       };
 
       setAuditLogs((prev) => [newLog, ...prev]);
-      setMetrics((prev) => {
-        const newRisk = prev.totalRisk + 3499;
-        const newRec = prev.totalRecovered + 3499;
-        const newCount = prev.recoveredCount + 1;
-        const newRate = Number(((newRec / newRisk) * 100).toFixed(1));
-        return {
-          ...prev,
-          totalRisk: newRisk,
-          totalRecovered: newRec,
-          recoveredCount: newCount,
-          recoveryRate: newRate,
-        };
-      });
     } catch (err) {
       console.error('Simulation failed:', err);
     }
@@ -145,21 +162,6 @@ export default function Home() {
     };
 
     setAuditLogs((prev) => [newLog, ...prev]);
-    if (result.event !== 'invoice.overdue') {
-      setMetrics((prev) => {
-        const newRisk = prev.totalRisk + (result.amount || 2499);
-        const newRec = prev.totalRecovered + (result.amount || 2499);
-        const newCount = prev.recoveredCount + 1;
-        const newRate = Number(((newRec / newRisk) * 100).toFixed(1));
-        return {
-          ...prev,
-          totalRisk: newRisk,
-          totalRecovered: newRec,
-          recoveredCount: newCount,
-          recoveryRate: newRate,
-        };
-      });
-    }
   };
 
   // Called when webhook auto-recovery triggers
@@ -181,21 +183,6 @@ export default function Home() {
     };
 
     setAuditLogs((prev) => [newLog, ...prev]);
-    if (event.amount > 0) {
-      setMetrics((prev) => {
-        const newRisk = prev.totalRisk + event.amount;
-        const newRec = prev.totalRecovered + event.amount;
-        const newCount = prev.recoveredCount + 1;
-        const newRate = Number(((newRec / newRisk) * 100).toFixed(1));
-        return {
-          ...prev,
-          totalRisk: newRisk,
-          totalRecovered: newRec,
-          recoveredCount: newCount,
-          recoveryRate: newRate,
-        };
-      });
-    }
   };
 
   // Called when 50-Record Batch Benchmark runs
