@@ -154,9 +154,6 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
               <Radio className="w-5 h-5 text-blue-600" />
               <span>Razorpay Webhook Events</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1">
-              Live feed of incoming Razorpay <code className="font-mono bg-slate-100 px-1 rounded">payment.failed</code> webhook events with auto-recovery.
-            </p>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -205,9 +202,6 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
             <span>Webhook URL: <code className="font-mono bg-slate-100 px-1 rounded text-blue-700">/api/webhooks/razorpay</code></span>
           </div>
         </div>
-        <p className="text-[11px] text-slate-400 mt-2">
-          Sends a mock Razorpay <code className="font-mono">payment.failed</code> payload to test auto-recovery pipeline.
-        </p>
       </div>
 
       {/* Events Feed */}
@@ -228,9 +222,6 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
           <div className="p-12 rounded-xl border border-dashed border-slate-300 bg-white text-center space-y-3">
             <Radio className="w-10 h-10 text-slate-300 mx-auto animate-pulse" />
             <p className="text-sm font-semibold text-slate-500">No webhook events received yet</p>
-            <p className="text-xs text-slate-400 max-w-md mx-auto">
-              Click "Simulate payment.failed" above to test, or configure your Razorpay dashboard to send webhooks to this endpoint.
-            </p>
           </div>
         ) : (
           <div className="space-y-2">
