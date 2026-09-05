@@ -83,7 +83,7 @@ export default function ConfigTab({ guardrails, setGuardrails }) {
 
             <div>
               <label className="block font-bold text-slate-700 mb-1">
-                Minimum Order Amount for Voice Bot Nudges (₹)
+                Minimum Order Amount for Priority WhatsApp Nudges (₹)
               </label>
               <input
                 type="number"
@@ -92,7 +92,7 @@ export default function ConfigTab({ guardrails, setGuardrails }) {
                 className="w-full px-3 py-2 rounded-lg glass-input"
               />
               <p className="text-[11px] text-slate-500 mt-1">
-                Voice calls only trigger for transactions above this value to optimize outreach unit economics.
+                Automated WhatsApp nudges only trigger for transactions above this value to optimize outreach unit economics.
               </p>
             </div>
 

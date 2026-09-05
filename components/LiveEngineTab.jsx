@@ -27,6 +27,7 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
   const [language, setLanguage] = useState('hi');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [inboundReply, setInboundReply] = useState('Too expensive! Can I get a 10% discount?');
 
   // Real Twilio WhatsApp Sending state
   const [isSendingTwilio, setIsSendingTwilio] = useState(false);
@@ -76,6 +77,45 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
     setResult(null);
     setPaymentDone(false);
     setTwilioStatus(null);
+
+    if (selectedModule === 'module3_negotiator') {
+      try {
+        const res = await fetch('/api/webhooks/whatsapp-reply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fromPhone: customerPhone,
+            customerName: customerName,
+            incomingText: inboundReply,
+            amount: amount,
+          }),
+        });
+        const data = await res.json();
+        const combined = {
+          success: true,
+          event: `INBOUND_REPLY [${data.objectionType}]`,
+          diagnosis: `Buyer Objection: "${inboundReply}"`,
+          action: data.proposedAction,
+          channel: '2-Way WhatsApp Negotiator',
+          explainability: data.policyReason,
+          hinglishDialogue: data.responseText,
+          gateStatus: data.policyVetoPassed ? 'POLICY_PASSED' : 'POLICY_VETOED',
+          gateExplanation: data.policyReason,
+          razorpayLink: data.paymentLinkUrl,
+          isLiveApi: true,
+          amount,
+          customer: customerName,
+          timestamp: new Date().toLocaleTimeString('en-IN'),
+        };
+        setResult(combined);
+        if (onSimulateComplete) onSimulateComplete(combined);
+      } catch (err) {
+        console.error('Negotiation error:', err);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
     let eventType = 'payment.failed';
     if (selectedModule === 'module1_abandoned') eventType = 'checkout.abandoned';
@@ -239,7 +279,7 @@ ${result.razorpayLink}
       {/* Module Selector Bar */}
       <div className="glass-panel p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
         <h2 className="text-xs font-semibold text-slate-400 mb-3 uppercase tracking-wider">Select Recovery Module</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
           <button
             onClick={() => setSelectedModule('module1')}
             className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
@@ -286,6 +326,22 @@ ${result.razorpayLink}
             </div>
             <div className={`text-xs font-semibold ${selectedModule === 'module2' ? 'text-white' : 'text-slate-900'}`}>Mandate Retry</div>
             <div className={`text-[11px] mt-0.5 ${selectedModule === 'module2' ? 'text-slate-300' : 'text-slate-500'}`}>Sub Retry Sequencer</div>
+          </button>
+
+          <button
+            onClick={() => setSelectedModule('module3_negotiator')}
+            className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+              selectedModule === 'module3_negotiator'
+                ? 'bg-slate-900 border-slate-900 shadow-sm text-white'
+                : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            <div className={`flex items-center space-x-2 mb-1 ${selectedModule === 'module3_negotiator' ? 'text-indigo-400' : 'text-slate-600'}`}>
+              <Smartphone className="w-4 h-4" />
+              <span className="font-semibold text-xs uppercase tracking-wide">Module 3</span>
+            </div>
+            <div className={`text-xs font-semibold ${selectedModule === 'module3_negotiator' ? 'text-white' : 'text-slate-900'}`}>2-Way Negotiator</div>
+            <div className={`text-[11px] mt-0.5 ${selectedModule === 'module3_negotiator' ? 'text-slate-300' : 'text-slate-500'}`}>Buyer Objection AI</div>
           </button>
         </div>
       </div>
@@ -361,6 +417,20 @@ ${result.razorpayLink}
                   <option value="INSUFFICIENT_FUNDS">INSUFFICIENT_FUNDS (Card Limit Declined)</option>
                   <option value="GATEWAY_DOWNTIME">GATEWAY_DOWNTIME (Bank Gateway Offline)</option>
                 </select>
+              </div>
+            )}
+
+            {selectedModule === 'module3_negotiator' && (
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1 font-bold text-indigo-700">Simulate Buyer WhatsApp Reply (Objection Input)</label>
+                <input
+                  type="text"
+                  value={inboundReply}
+                  onChange={(e) => setInboundReply(e.target.value)}
+                  placeholder="e.g. Too expensive! Can I get a 10% discount?"
+                  className="w-full px-3 py-2 rounded-lg glass-input text-xs border-indigo-300 focus:border-indigo-500"
+                />
+                <p className="text-[10px] text-slate-400 mt-1">AI Agent will evaluate merchant policy limits and dynamically negotiate discounts or pay-later terms.</p>
               </div>
             )}
 
