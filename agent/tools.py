@@ -190,12 +190,13 @@ async def tool_create_payment_link(
     if rzp_key and rzp_secret and rzp_key.startswith("rzp_"):
         try:
             auth = base64.b64encode(f"{rzp_key}:{rzp_secret}".encode()).decode()
+            key_val = idempotency_key or f"revguard:{hash((customer_phone or customer_name) + str(amount)) % 10**8}"
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Basic {auth}",
+                "Idempotency-Key": key_val,
+                "X-Idempotency-Key": key_val,
             }
-            if idempotency_key:
-                headers["X-Idempotency-Key"] = idempotency_key
 
             payload = {
                 "amount": int(amount * 100),

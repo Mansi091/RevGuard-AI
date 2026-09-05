@@ -151,7 +151,10 @@ No markdown, no backticks. JSON only.`;
       }
     }
 
-    const gateExplanation = `Guardrail Enforced: Max retries allowed = ${maxRetries}. Current attempt = 1. Compliant with quiet hours.`;
+    const flashSaleActive = guardrails?.flashSaleActive || false;
+    const gateExplanation = flashSaleActive
+      ? `Guardrail Enforced: Max retries = ${maxRetries}. 🔥 Flash Sale Mode Active: Quiet hours bypassed.`
+      : `Guardrail Enforced: Max retries allowed = ${maxRetries}. Current attempt = 1. Compliant with quiet hours.`;
 
     return NextResponse.json({
       success: true,

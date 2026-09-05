@@ -282,6 +282,7 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
             min_voice_amount: guardrails?.minVoiceAmount || 500,
             quiet_hours_start: guardrails?.quietHoursStart || 21,
             quiet_hours_end: guardrails?.quietHoursEnd || 8,
+            flash_sale_active: guardrails?.flashSaleActive || false,
           }),
         });
         const agentData = await agentRes.json();
@@ -621,10 +622,40 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
 
         {/* Right Column */}
         <div className="lg:col-span-7 glass-panel p-6 rounded-xl border border-slate-200 bg-white space-y-4 shadow-xs">
+          {/* Agent Visual Flow Diagram (IMP: Hackathon Judges Visualizer) */}
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">LangGraph Orchestration Flow</span>
+            <div className="flex items-center gap-1.5 overflow-x-auto py-1 text-xs">
+              {[
+                { node: "DETECT", label: "Detect Event", icon: "🔍", stepNum: 0 },
+                { node: "DIAGNOSE", label: "AI Diagnosis", icon: "🤖", stepNum: 1 },
+                { node: "GUARDRAIL", label: "Guardrail Check", icon: "🛡️", stepNum: 2 },
+                { node: "EXECUTE", label: "Execute", icon: "⚡", stepNum: 3 },
+                { node: "AUDIT", label: "Audit Trail", icon: "📋", stepNum: 4 },
+              ].map((step, i, arr) => {
+                const isCompleted = result ? true : false;
+                const isCurrent = loading && i === 1;
+                return (
+                  <React.Fragment key={step.node}>
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all ${
+                      isCompleted ? "bg-emerald-100 text-emerald-800 border border-emerald-300" :
+                      isCurrent ? "bg-indigo-100 text-indigo-800 border border-indigo-300 animate-pulse" :
+                      "bg-white text-slate-400 border border-slate-200"
+                    }`}>
+                      <span>{step.icon}</span>
+                      <span>{step.label}</span>
+                    </div>
+                    {i < arr.length - 1 && <span className="text-slate-300 font-bold shrink-0">→</span>}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-sm font-semibold text-slate-900 flex items-center space-x-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>AI Recovery Output</span>
+              <span>AI Recovery Output & Audit Gate</span>
             </h3>
 
             <div className="flex items-center space-x-1.5">
@@ -706,6 +737,18 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
                 <div className="p-3 rounded-lg bg-white border border-slate-200 text-xs font-mono whitespace-pre-line text-slate-800 leading-relaxed">
                   {result.hinglishDialogue}
                 </div>
+
+                {result.voiceAudioBase64 && (
+                  <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg space-y-1.5">
+                    <p className="text-[11px] font-bold text-purple-900 flex items-center gap-1.5">
+                      🎙 Sarvam AI Generated Voice Audio ({selectedLang.label})
+                    </p>
+                    <audio controls className="w-full h-8">
+                      <source src={`data:audio/wav;base64,${result.voiceAudioBase64}`} type="audio/wav" />
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                )}
               </div>
 
               {/* Razorpay Test Link & WhatsApp Controls */}

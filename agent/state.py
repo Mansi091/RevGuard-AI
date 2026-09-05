@@ -28,6 +28,7 @@ class AgentState(TypedDict):
     quiet_hours_end: int         # 8 = 8AM
     auto_halt_on_dnd: bool
     voice_consent: bool          # Voice outreach consent flag
+    flash_sale_active: bool      # Flash sale override flag for quiet hours
 
     # --- Agent Working Memory (filled by nodes) ---
     diagnosis: str               # Root cause analysis

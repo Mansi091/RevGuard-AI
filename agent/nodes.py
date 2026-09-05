@@ -107,40 +107,44 @@ async def guardrail_check_node(state: AgentState) -> dict:
     chosen_channel = state.get("chosen_channel", "WhatsApp UPI")
     voice_consent = state.get("voice_consent", True)
     event_type = state.get("event_type", "payment.failed")
+    flash_sale_active = state.get("flash_sale_active", False)
 
-    # Smart Channel & Guardrail Policy:
-    # 1. Voice calls are suppressed during quiet hours or if consent/amount threshold isn't met.
-    # 2. Silent digital outreach (WhatsApp 1-Click UPI link) is NEVER hard-blocked for real-time checkout failures / flash sales (e.g. 2 AM Nykaa sale),
-    #    because the customer is actively on the site trying to purchase right now.
+    blocked = False
+
+    # === FIX: Only block B2B invoice events during quiet hours unless Flash Sale Mode is active ===
+    if is_quiet_hours and flash_sale_active:
+        blocked = False
+        reason = f"Flash Sale Active: Quiet hours bypassed for merchant sale event."
+    elif is_quiet_hours and event_type == "invoice.overdue":
+        blocked = True
+        reason = f"Blocked: Quiet hours active ({quiet_start}:00 - {quiet_end}:00). B2B invoice — no urgency."
+    else:
+        blocked = False
+        reason = "All guardrails passed."
+
+    # Voice downgrade logic
     if "Voice" in chosen_channel:
-        if is_quiet_hours:
+        if is_quiet_hours and not flash_sale_active:
             chosen_channel = "WhatsApp UPI"
-            reason = f"Quiet hours active ({quiet_start}:00 - {quiet_end}:00). AI Voice Call downgraded to Instant WhatsApp 1-Click Payment Link so customer is not disturbed by phone call during late-night sale."
+            reason += f" Quiet hours active ({quiet_start}:00 - {quiet_end}:00). AI Voice Call downgraded to Instant WhatsApp Payment Link."
         elif amount < min_voice:
             chosen_channel = "WhatsApp UPI"
-            reason = f"Voice downgraded to WhatsApp: amount ₹{amount} < threshold ₹{min_voice}."
+            reason += f" Voice downgraded to WhatsApp: amount ₹{amount} < threshold ₹{min_voice}."
         elif not voice_consent:
             chosen_channel = "WhatsApp UPI"
-            reason = "Voice downgraded to WhatsApp: voice consent missing (DND/opt-out)."
-        else:
-            reason = "All guardrails passed for Voice Call."
-    else:
-        if is_quiet_hours:
-            reason = f"Quiet hours active ({quiet_start}:00 - {quiet_end}:00). Instant WhatsApp UPI payment link dispatched silently for real-time checkout recovery."
-        else:
-            reason = "All guardrails passed."
+            reason += " Voice downgraded to WhatsApp: voice consent missing (DND/opt-out)."
 
     trace_entry = {
         "node": "GUARDRAIL_CHECK",
         "timestamp": datetime.now().isoformat(),
         "message": reason,
-        "passed": True,  # Digital recovery is allowed so merchant doesn't lose midnight flash sales
+        "passed": not blocked,
     }
 
     existing_trace = state.get("agent_trace", [])
 
     return {
-        "guardrail_passed": True,
+        "guardrail_passed": not blocked,
         "guardrail_reason": reason,
         "chosen_channel": chosen_channel,
         "current_node": "guardrail_check",
@@ -265,6 +269,7 @@ async def audit_node(state: AgentState) -> dict:
         f"  Action:      {state.get('chosen_action', 'N/A')}",
         "───────────────────────────────────────────",
         f"  Guardrail:   {'✅ PASSED' if state.get('guardrail_passed') else '❌ BLOCKED'}",
+        f"  Override:    {'🔥 FLASH SALE' if state.get('flash_sale_active') else 'None'}",
         f"  Reason:      {state.get('guardrail_reason', 'N/A')}",
         "───────────────────────────────────────────",
         f"  Payment Link: {state.get('payment_link_url', 'N/A')}",

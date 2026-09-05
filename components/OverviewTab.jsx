@@ -35,6 +35,24 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
         </div>
       </div>
 
+      {/* Item 8: CTA Banner — See RevGuard in Action */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h3 className="text-base font-bold mb-1 flex items-center gap-2">
+            <span>🚀 See RevGuard in Action</span>
+          </h3>
+          <p className="text-xs opacity-90 max-w-xl">
+            Watch the AI agent diagnose a payment failure, pick an optimal channel, and send a 1-click recovery payment link — in real time.
+          </p>
+        </div>
+        <button
+          onClick={() => onNavigateTab('live-engine')}
+          className="bg-white text-blue-900 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-blue-50 transition-all shrink-0 cursor-pointer shadow-xs flex items-center space-x-1.5"
+        >
+          <span>Run Live Demo →</span>
+        </button>
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1 */}
@@ -90,6 +108,23 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
           <div className="mt-3">
             <div className="text-2xl font-bold text-slate-900">{metrics.stoppedCount} Halted</div>
             <p className="text-xs text-slate-500 font-medium mt-1">Zero False-Positive Spams</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Item 9: Success Story Card */}
+      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-xs">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl shrink-0">✅</span>
+          <div className="space-y-1">
+            <p className="font-bold text-sm text-emerald-900">₹2,49,999 Recovered in Real Time</p>
+            <p className="text-xs text-emerald-800 leading-relaxed">
+              Vikram Sharma's SaaS Enterprise subscription (₹2,49,999/year) mandate failed at 2:15 AM during bank maintenance.
+              RevGuard diagnosed gateway timeout, dispatched a 1-click WhatsApp payment link, and the customer paid within 3 minutes.
+            </p>
+            <p className="text-[11px] font-mono text-emerald-700 font-semibold pt-1">
+              Guardrail status: Flash sale mode active. Silent digital nudge passed quietly.
+            </p>
           </div>
         </div>
       </div>

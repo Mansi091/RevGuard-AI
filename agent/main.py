@@ -46,6 +46,7 @@ class RecoveryRequest(BaseModel):
     quiet_hours_end: int = Field(default=8, description="Quiet hours end (24h)")
     auto_halt_on_dnd: bool = Field(default=True, description="Auto-halt on DND")
     voice_consent: bool = Field(default=True, description="Customer voice call consent")
+    flash_sale_active: bool = Field(default=False, description="Flash sale mode active")
     thread_id: Optional[str] = Field(default=None, description="LangGraph execution thread ID for state resumption")
 
 
@@ -151,6 +152,7 @@ async def run_recovery(req: RecoveryRequest):
             "quiet_hours_end": req.quiet_hours_end,
             "auto_halt_on_dnd": req.auto_halt_on_dnd,
             "voice_consent": req.voice_consent,
+            "flash_sale_active": req.flash_sale_active,
             # Initialize working memory
             "diagnosis": "",
             "risk_score": 0,
