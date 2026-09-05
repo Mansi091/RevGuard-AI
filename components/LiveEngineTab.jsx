@@ -468,15 +468,15 @@ ${result.razorpayLink}
           <div className="glass-panel p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
             <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">LangGraph Orchestration Flow</div>
             <div className="flex items-center justify-between text-xs font-semibold overflow-x-auto py-1">
-              <span className={`px-2.5 py-1 rounded-md ${loading ? 'bg-indigo-100 text-indigo-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>🔍 Detect</span>
+              <span className={`px-2.5 py-1 rounded-md ${loading ? 'bg-indigo-100 text-indigo-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>Detect</span>
               <span className="text-slate-300">→</span>
-              <span className={`px-2.5 py-1 rounded-md ${loading ? 'bg-indigo-100 text-indigo-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>🤖 AI Diagnosis</span>
+              <span className={`px-2.5 py-1 rounded-md ${loading ? 'bg-indigo-100 text-indigo-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>AI Diagnosis</span>
               <span className="text-slate-300">→</span>
-              <span className={`px-2.5 py-1 rounded-md ${loading ? 'bg-indigo-100 text-indigo-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>🛡️ Guardrails</span>
+              <span className={`px-2.5 py-1 rounded-md ${loading ? 'bg-indigo-100 text-indigo-700 animate-pulse' : 'bg-slate-100 text-slate-700'}`}>Guardrails</span>
               <span className="text-slate-300">→</span>
-              <span className={`px-2.5 py-1 rounded-md ${result ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>⚡ Execute Link</span>
+              <span className={`px-2.5 py-1 rounded-md ${result ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>Execute Link</span>
               <span className="text-slate-300">→</span>
-              <span className={`px-2.5 py-1 rounded-md ${result ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>📋 Audit</span>
+              <span className={`px-2.5 py-1 rounded-md ${result ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>Audit</span>
             </div>
           </div>
 
