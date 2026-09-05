@@ -185,7 +185,7 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
           >
             <div>
               <div className="text-xs font-bold text-slate-900">B2B Invoice Overdue</div>
-              <div className="text-[10px] text-slate-500">Sarvam AI Voice Call</div>
+              <div className="text-[10px] text-slate-500">Automated WhatsApp Nudge</div>
             </div>
             {loadingEvent === 'invoice.overdue' ? (
               <RefreshCw className="w-3.5 h-3.5 text-purple-600 animate-spin" />
