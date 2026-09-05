@@ -14,52 +14,43 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
 
   return (
     <div className="space-y-6 text-slate-800">
-      {/* Banner / Value Proposition */}
+      {/* Sleek Hero Banner */}
       <div className="relative overflow-hidden rounded-2xl p-6 bg-slate-900 text-white shadow-sm border border-slate-800">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-xl font-bold text-white tracking-tight">
-              Autonomous AI Revenue Recovery Engine
+            <h1 className="text-xl font-bold text-white tracking-tight flex items-center space-x-2">
+              <Zap className="w-5 h-5 text-indigo-400" />
+              <span>Autonomous AI Revenue Recovery Engine</span>
             </h1>
             <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
-              Detects payment degradation, checkout drop-offs, subscription mandate failures, and overdue B2B receivables in real time. Executes explainable, bounded interventions with Razorpay test mode APIs.
+              Intercepts payment failures, cart drops, and mandate errors in real time. Executes explainable, bounded interventions via Razorpay Test Mode, Twilio WhatsApp, & Sarvam AI Voice.
             </p>
           </div>
-          <button
-            onClick={() => onNavigateTab('batch-benchmark')}
-            className="flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg bg-white text-slate-900 hover:bg-slate-100 font-semibold text-xs transition-all shrink-0 cursor-pointer"
-          >
-            <span>Run 50-Batch Test Benchmark</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center space-x-2 shrink-0">
+            <button
+              onClick={() => onNavigateTab('live-engine')}
+              className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+            >
+              <span>🚀 Run Live Demo</span>
+            </button>
+            <button
+              onClick={() => onNavigateTab('batch-benchmark')}
+              className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition-all cursor-pointer border border-slate-700"
+            >
+              <span>50-Batch Test</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Item 8: CTA Banner — See RevGuard in Action */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-        <div>
-          <h3 className="text-base font-bold mb-1 flex items-center gap-2">
-            <span>🚀 See RevGuard in Action</span>
-          </h3>
-          <p className="text-xs opacity-90 max-w-xl">
-            Watch the AI agent diagnose a payment failure, pick an optimal channel, and send a 1-click recovery payment link — in real time.
-          </p>
-        </div>
-        <button
-          onClick={() => onNavigateTab('live-engine')}
-          className="bg-white text-blue-900 px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-blue-50 transition-all shrink-0 cursor-pointer shadow-xs flex items-center space-x-1.5"
-        >
-          <span>Run Live Demo →</span>
-        </button>
-      </div>
-
-      {/* KPI Cards */}
+      {/* KPI Summary Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1 */}
         <div className="glass-panel p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Revenue at Risk</span>
-            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+            <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600">
               <ShieldAlert className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -73,12 +64,12 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
         <div className="glass-panel p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Money Recovered</span>
-            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
               <TrendingUp className="w-3.5 h-3.5" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-bold text-slate-900">₹{metrics.totalRecovered.toLocaleString('en-IN')}</div>
+            <div className="text-2xl font-bold text-emerald-600">₹{metrics.totalRecovered.toLocaleString('en-IN')}</div>
             <p className="text-xs text-slate-500 font-medium mt-1">{metrics.recoveredCount} Successful Recoveries</p>
           </div>
         </div>
@@ -87,7 +78,7 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
         <div className="glass-panel p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Recovery Rate</span>
-            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-indigo-600">
+            <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -112,135 +103,133 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
         </div>
       </div>
 
-      {/* Item 9: Success Story Card */}
-      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-xs">
+      {/* High-Value Recovery Highlight */}
+      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 shadow-xs">
         <div className="flex items-start gap-3">
-          <span className="text-2xl shrink-0">✅</span>
-          <div className="space-y-1">
-            <p className="font-bold text-sm text-emerald-900">₹2,49,999 Recovered in Real Time</p>
+          <div className="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+            ✓
+          </div>
+          <div className="space-y-0.5">
+            <p className="font-bold text-xs text-emerald-900">₹2,49,999 Enterprise Mandate Recovered</p>
             <p className="text-xs text-emerald-800 leading-relaxed">
-              Vikram Sharma's SaaS Enterprise subscription (₹2,49,999/year) mandate failed at 2:15 AM during bank maintenance.
-              RevGuard diagnosed gateway timeout, dispatched a 1-click WhatsApp payment link, and the customer paid within 3 minutes.
-            </p>
-            <p className="text-[11px] font-mono text-emerald-700 font-semibold pt-1">
-              Guardrail status: Flash sale mode active. Silent digital nudge passed quietly.
+              Vikram Sharma's SaaS subscription mandate failed at 2:15 AM during bank maintenance. RevGuard AI diagnosed gateway timeout, auto-dispatched a silent WhatsApp 1-click payment link, and recovered the sale in 3 minutes.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Interactive Quick Simulation Bar */}
-      <div className="glass-panel p-6 rounded-xl border border-slate-200 bg-white space-y-4 shadow-sm">
+      {/* Quick Simulation Bar */}
+      <div className="glass-panel p-5 rounded-xl border border-slate-200 bg-white space-y-3 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-900">Simulate Live Payment Failure Events</h3>
-            <p className="text-xs text-slate-500">Trigger test webhook events to watch the AI recovery agent diagnose and generate Razorpay payment links live.</p>
+            <h3 className="text-sm font-bold text-slate-900">Simulate Live Payment Events</h3>
+            <p className="text-xs text-slate-500">Trigger real-time webhook events to evaluate AI diagnosis & Razorpay link generation.</p>
           </div>
           <button
             onClick={() => onNavigateTab('live-engine')}
-            className="text-xs text-blue-600 hover:text-blue-700 font-bold flex items-center space-x-1"
+            className="text-xs text-indigo-600 hover:text-indigo-700 font-bold flex items-center space-x-1"
           >
-            <span>Open Full Interactive Engine</span>
+            <span>Open Live Engine</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
           <button
             onClick={() => handleSimulate('payment.failed')}
             disabled={loadingEvent !== null}
-            className="flex items-center justify-between p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-left transition-all group cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-left transition-all group cursor-pointer"
           >
             <div>
-              <div className="text-xs font-semibold text-slate-900">Payment Failed</div>
-              <div className="text-[11px] text-slate-500">Bank OTP Timeout</div>
+              <div className="text-xs font-bold text-slate-900">Payment Failed</div>
+              <div className="text-[10px] text-slate-500">Bank OTP Timeout</div>
             </div>
             {loadingEvent === 'payment.failed' ? (
-              <RefreshCw className="w-4 h-4 text-indigo-600 animate-spin" />
+              <RefreshCw className="w-3.5 h-3.5 text-indigo-600 animate-spin" />
             ) : (
-              <Zap className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+              <Zap className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600" />
             )}
           </button>
 
           <button
             onClick={() => handleSimulate('checkout.abandoned')}
             disabled={loadingEvent !== null}
-            className="flex items-center justify-between p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-left transition-all group cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-left transition-all group cursor-pointer"
           >
             <div>
-              <div className="text-xs font-semibold text-slate-900">Checkout Abandoned</div>
-              <div className="text-[11px] text-slate-500">High-Intent Cart Drop</div>
+              <div className="text-xs font-bold text-slate-900">Cart Drop</div>
+              <div className="text-[10px] text-slate-500">Checkout Abandoned</div>
             </div>
             {loadingEvent === 'checkout.abandoned' ? (
-              <RefreshCw className="w-4 h-4 text-indigo-600 animate-spin" />
+              <RefreshCw className="w-3.5 h-3.5 text-indigo-600 animate-spin" />
             ) : (
-              <Zap className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+              <Zap className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600" />
             )}
           </button>
 
           <button
             onClick={() => handleSimulate('subscription.halted')}
             disabled={loadingEvent !== null}
-            className="flex items-center justify-between p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-left transition-all group cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-left transition-all group cursor-pointer"
           >
             <div>
-              <div className="text-xs font-semibold text-slate-900">Subscription Mandate Fail</div>
-              <div className="text-[11px] text-slate-500">Gateway Timeout</div>
+              <div className="text-xs font-bold text-slate-900">Subscription Fail</div>
+              <div className="text-[10px] text-slate-500">Mandate Gateway Timeout</div>
             </div>
             {loadingEvent === 'subscription.halted' ? (
-              <RefreshCw className="w-4 h-4 text-indigo-600 animate-spin" />
+              <RefreshCw className="w-3.5 h-3.5 text-indigo-600 animate-spin" />
             ) : (
-              <Zap className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+              <Zap className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600" />
             )}
           </button>
 
           <button
             onClick={() => handleSimulate('invoice.overdue')}
             disabled={loadingEvent !== null}
-            className="flex items-center justify-between p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-left transition-all group cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-left transition-all group cursor-pointer"
           >
             <div>
-              <div className="text-xs font-semibold text-slate-900">B2B Invoice Overdue</div>
-              <div className="text-[11px] text-slate-500">Promise-to-Pay Voice</div>
+              <div className="text-xs font-bold text-slate-900">B2B Invoice Overdue</div>
+              <div className="text-[10px] text-slate-500">Sarvam AI Voice Call</div>
             </div>
             {loadingEvent === 'invoice.overdue' ? (
-              <RefreshCw className="w-4 h-4 text-purple-600 animate-spin" />
+              <RefreshCw className="w-3.5 h-3.5 text-purple-600 animate-spin" />
             ) : (
-              <Zap className="w-4 h-4 text-slate-400 group-hover:text-purple-600" />
+              <Zap className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-600" />
             )}
           </button>
         </div>
       </div>
 
-      {/* Recent Activity Log Stream */}
-      <div className="glass-panel rounded-xl border border-slate-200 bg-white p-6 space-y-4 shadow-sm">
+      {/* Live Activity Stream */}
+      <div className="glass-panel rounded-xl border border-slate-200 bg-white p-5 space-y-3 shadow-sm">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-slate-900">Live Recovery Activity Stream</h3>
+          <h3 className="text-sm font-bold text-slate-900">Live Recovery Activity Stream</h3>
           <button
             onClick={() => onNavigateTab('audit-trail')}
-            className="text-xs text-blue-600 hover:text-blue-700 font-bold"
+            className="text-xs text-indigo-600 hover:text-indigo-700 font-bold"
           >
             View Full Audit Logs →
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           {auditLogs.slice(0, 4).map((log) => (
-            <div key={log.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="space-y-1">
-                <div className="flex items-center space-x-2">
+            <div key={log.id} className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div className="space-y-0.5 min-w-0">
+                <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                   <span className="text-xs font-bold text-slate-900">{log.customer}</span>
-                  <span className="text-xs px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-mono font-medium">{log.event}</span>
-                  <span className={`text-xs font-extrabold ${log.status === 'RECOVERED' ? 'text-emerald-700' : log.status === 'P2P_RECORDED' ? 'text-blue-700' : 'text-amber-700'}`}>
-                    ₹{log.amount.toLocaleString('en-IN')}
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-mono font-medium">{log.event}</span>
+                  <span className="text-xs font-extrabold text-emerald-700">
+                    ₹{log.amount?.toLocaleString('en-IN')}
                   </span>
                 </div>
-                <p className="text-xs text-slate-800 font-semibold">{log.action}</p>
-                <p className="text-[11px] text-slate-500 font-mono">{log.explainability}</p>
+                <p className="text-xs text-slate-800 font-medium truncate">{log.action}</p>
+                <p className="text-[10px] text-slate-400 font-mono truncate">{log.explainability}</p>
               </div>
 
-              <div className="flex items-center space-x-3 self-start md:self-center">
-                <span className={`text-[11px] font-bold uppercase px-2.5 py-1 rounded-md border ${
+              <div className="flex items-center space-x-2 shrink-0">
+                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
                   log.status === 'RECOVERED' ? 'bg-emerald-100 border-emerald-300 text-emerald-800' :
                   log.status === 'P2P_RECORDED' ? 'bg-blue-100 border-blue-300 text-blue-800' :
                   'bg-amber-100 border-amber-300 text-amber-800'
@@ -252,10 +241,10 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
                     href={`https://razorpay.com/pay/${log.razorpayLinkId}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-1.5 rounded-md bg-slate-200 hover:bg-slate-300 text-blue-600 transition-colors"
+                    className="p-1 rounded bg-slate-200 hover:bg-slate-300 text-indigo-600 transition-colors"
                     title="Open Razorpay Test Link"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 )}
               </div>
