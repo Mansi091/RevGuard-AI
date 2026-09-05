@@ -76,10 +76,12 @@ export async function POST(request) {
       }
     }
 
-    let failureReason = eventEntity.error_code || eventEntity.error_reason || (eventType === 'payment.captured' ? 'PAYMENT_SUCCESS' : 'BANK_DECLINED');
+    const isCaptured = eventType === 'payment.captured' || eventType === 'payment.authorized' || eventEntity.status === 'captured' || eventEntity.status === 'authorized';
+
+    let failureReason = isCaptured ? 'PAYMENT_SUCCESS' : (eventEntity.error_code || eventEntity.error_reason || 'BANK_DECLINED');
     let errorDescription = eventEntity.error_description;
-    if (!errorDescription || errorDescription === 'No description') {
-      if (eventType === 'payment.captured') {
+    if (!errorDescription || errorDescription === 'No description' || isCaptured) {
+      if (isCaptured) {
         errorDescription = 'Payment successfully authorized & captured by bank.';
       } else {
         errorDescription = 'Payment was declined by the issuing bank during authentication.';
