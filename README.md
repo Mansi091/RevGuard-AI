@@ -113,9 +113,3 @@ RevGuard AI operates strictly within bounded merchant parameters:
 
 4. **Access Dashboard**:
    Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## 📜 License
-Built for **Razorpay Buildathon 2026**. Open source under the MIT License.
-
