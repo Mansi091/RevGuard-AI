@@ -780,8 +780,22 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
                 </div>
 
                 {twilioStatus && (
-                  <div className="p-2.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200">
-                    {twilioStatus.message}
+                  <div className="p-3 rounded-lg text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200 space-y-2">
+                    <p>{twilioStatus.message}</p>
+                    {twilioStatus.waLink && (
+                      <div>
+                        <a
+                          href={twilioStatus.waLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs transition-all text-xs"
+                        >
+                          <Smartphone className="w-3.5 h-3.5" />
+                          <span>Open & Send on WhatsApp</span>
+                          <ExternalLink className="w-3 h-3 ml-0.5 opacity-80" />
+                        </a>
+                      </div>
+                    )}
                   </div>
                 )}
 

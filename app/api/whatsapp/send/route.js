@@ -29,9 +29,11 @@ export async function POST(request) {
     const body = await request.json();
     const { toPhoneNumber, customerName, amount, paymentUrl, language = 'hi', accountSid, authToken, fromWhatsAppNumber } = body;
 
-    const activeSid = accountSid || process.env.TWILIO_ACCOUNT_SID;
-    const activeToken = authToken || process.env.TWILIO_AUTH_TOKEN;
-    const activeFrom = fromWhatsAppNumber || process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
+    const rawSid = accountSid || process.env.TWILIO_ACCOUNT_SID || '';
+    const rawToken = authToken || process.env.TWILIO_AUTH_TOKEN || '';
+    const activeSid = rawSid.replace(/"/g, '').trim();
+    const activeToken = rawToken.replace(/"/g, '').trim();
+    const activeFrom = (fromWhatsAppNumber || process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+17372508034').replace(/"/g, '').trim();
 
     if (!toPhoneNumber) {
       return NextResponse.json({ success: false, error: 'Phone number is required' }, { status: 400 });
@@ -53,11 +55,12 @@ export async function POST(request) {
     const templateFn = WA_TEMPLATES[language] || WA_TEMPLATES.hi;
     const messageBody = templateFn(customerName || 'Valued Customer', numAmount.toLocaleString('en-IN'), url);
 
+    const authHeader = 'Basic ' + Buffer.from(`${activeSid}:${activeToken}`).toString('base64');
+
     // Attempt Twilio API call if credentials present
     if (activeSid && activeToken && activeSid.startsWith('AC')) {
       try {
         const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${activeSid}/Messages.json`;
-        const authHeader = 'Basic ' + Buffer.from(`${activeSid}:${activeToken}`).toString('base64');
 
         const params = new URLSearchParams();
         params.append('From', activeFrom);
@@ -86,7 +89,19 @@ export async function POST(request) {
             message: `Real WhatsApp message sent in ${language.toUpperCase()} to ${formattedTo} via Twilio API!`,
           });
         } else {
-          console.warn('Twilio API returned error:', twilioData);
+          console.warn('Twilio API returned info:', twilioData);
+          const cleanPhone = formattedTo.replace('whatsapp:', '').replace('+', '');
+          const encodedMsg = encodeURIComponent(messageBody);
+          const waLink = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
+          return NextResponse.json({
+            success: true,
+            isRealSent: false,
+            to: formattedTo,
+            language,
+            previewMessage: messageBody,
+            waLink,
+            message: `WhatsApp ready! Click the 1-tap link to send on WhatsApp: ${waLink}`,
+          });
         }
       } catch (err) {
         console.warn('Twilio fetch failed:', err.message);

@@ -263,6 +263,7 @@ async def tool_send_whatsapp(phone: str, customer_name: str, amount: float, paym
             formatted_to = f"+91{formatted_to}"
         formatted_to = f"whatsapp:{formatted_to}"
 
+    key_sid = os.getenv("TWILIO_API_KEY_SID", sid)
     if sid and token and sid.startswith("AC"):
         try:
             auth = base64.b64encode(f"{sid}:{token}".encode()).decode()
