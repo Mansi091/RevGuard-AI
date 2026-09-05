@@ -306,8 +306,20 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
                           <p><span className="font-bold text-slate-700">Diagnosis:</span> <span className="text-slate-600">{event.recoveryResult.diagnosis}</span></p>
                           <p><span className="font-bold text-slate-700">Action:</span> <span className="text-emerald-700 font-semibold">{event.recoveryResult.action}</span></p>
                           <p><span className="font-bold text-slate-700">Channel:</span> <span className="text-blue-700">{event.recoveryResult.channel}</span></p>
-                          <p className="italic text-slate-500">"{event.recoveryResult.explainability}"</p>
-                        </div>
+                        {event.customerPhone && (
+                          <div className="pt-2">
+                            <a
+                              href={`https://wa.me/${event.customerPhone.replace('+', '')}?text=${encodeURIComponent(`Namaste! 🙏\n\nRazorpay RevGuard AI se reminder. Aapka ₹${event.amount} ka payment retry fail ho gaya tha.\nInstant pay link: https://rzp.io/rzp/6JWQY2U\n\n-- Razorpay Automated Recovery`)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all"
+                            >
+                              <Smartphone className="w-4 h-4" />
+                              <span>Open & Send WhatsApp to {event.customerPhone}</span>
+                              <ExternalLink className="w-3.5 h-3.5 ml-1" />
+                            </a>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
