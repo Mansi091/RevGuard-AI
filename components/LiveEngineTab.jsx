@@ -86,6 +86,7 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
           body: JSON.stringify({
             fromPhone: customerPhone,
             customerName: customerName,
+            productName: 'Wireless Headphones Order',
             incomingText: inboundReply,
             amount: amount,
           }),

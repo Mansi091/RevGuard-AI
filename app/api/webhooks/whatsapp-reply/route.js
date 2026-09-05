@@ -9,7 +9,7 @@ import { evaluatePolicyRules, DEFAULT_POLICY_RULES } from '@/lib/policyEngine';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { fromPhone, customerName = 'Valued Customer', incomingText = '', amount = 2499, merchantPolicy = DEFAULT_POLICY_RULES } = body;
+    const { fromPhone, customerName = 'Valued Customer', productName = 'Wireless Headphones', incomingText = '', amount = 2499, merchantPolicy = DEFAULT_POLICY_RULES } = body;
 
     const textLower = incomingText.toLowerCase();
     let objectionType = 'GENERAL_INQUIRY';
@@ -44,18 +44,18 @@ export async function POST(request) {
         finalDiscountPct = policyResult.sanitizedAction.approvedDiscountPct;
         const discountedAmount = Math.round(amount * (1 - finalDiscountPct / 100));
 
-        responseText = `Namaste ${customerName}! 🙏 We understand! As a special 1-time courtesy, we've applied a ${finalDiscountPct}% discount to your order (New total: ₹${discountedAmount.toLocaleString('en-IN')}).\n\nPay instantly here:\n${paymentLinkUrl}\n\n-- RevGuard AI Negotiator`;
-        proposedAction = `Dynamic ${finalDiscountPct}% Discount Offered (Amount: ₹${discountedAmount})`;
+        responseText = `Namaste ${customerName}! 🙏 We understand! As a special 1-time courtesy, we've applied a ${finalDiscountPct}% discount to your order for "${productName}" (New total: ₹${discountedAmount.toLocaleString('en-IN')}).\n\nPay instantly here:\n${paymentLinkUrl}\n\n-- RevGuard AI Negotiator`;
+        proposedAction = `Dynamic ${finalDiscountPct}% Discount Offered for "${productName}" (Amount: ₹${discountedAmount})`;
       } else {
-        responseText = `Namaste ${customerName}! 🙏 Thank you for reaching out. Your original payment link (₹${amount.toLocaleString('en-IN')}) is available here:\n${paymentLinkUrl}`;
+        responseText = `Namaste ${customerName}! 🙏 Thank you for reaching out. Your original payment link for "${productName}" (₹${amount.toLocaleString('en-IN')}) is available here:\n${paymentLinkUrl}`;
         proposedAction = `Discount Vetoed by Merchant Policy: ${policyResult.vetoReason}`;
       }
     } else if (objectionType === 'TIMING_PAYLATER') {
-      responseText = `Namaste ${customerName}! 👍 No problem at all. We have recorded your Promise-to-Pay request. Reminders are paused until next week.\n\nHere is your payment link whenever ready:\n${paymentLinkUrl}`;
-      proposedAction = 'Recorded Promise-to-Pay (P2P) & Paused Reminders';
+      responseText = `Namaste ${customerName}! 👍 No problem at all. We have recorded your Promise-to-Pay request for "${productName}". Reminders are paused until next week.\n\nHere is your payment link whenever ready:\n${paymentLinkUrl}`;
+      proposedAction = `Recorded Promise-to-Pay (P2P) for "${productName}" & Paused Reminders`;
     } else {
-      responseText = `Namaste ${customerName}! 🙏 Here is your 1-click Razorpay payment link for ₹${amount.toLocaleString('en-IN')}:\n${paymentLinkUrl}`;
-      proposedAction = 'Standard 1-Click Recovery Link Issued';
+      responseText = `Namaste ${customerName}! 🙏 Here is your 1-click Razorpay payment link for "${productName}" (₹${amount.toLocaleString('en-IN')}):\n${paymentLinkUrl}`;
+      proposedAction = `Standard 1-Click Recovery Link Issued for "${productName}"`;
     }
 
     return NextResponse.json({
