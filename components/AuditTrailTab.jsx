@@ -21,19 +21,14 @@ export default function AuditTrailTab({ auditLogs }) {
     <div className="space-y-6 text-slate-800">
       {/* Header & Filter Bar */}
       <div className="glass-panel p-5 rounded-xl border border-slate-200 bg-white space-y-4 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-base font-bold text-slate-900 flex items-center space-x-2">
-              <FileText className="w-4 h-4 text-indigo-600" />
-              <span>Activity Audit Trail & Decision Logs</span>
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Verified log of all AI recovery diagnoses, guardrail checks, and payment actions.
-            </p>
-          </div>
-          <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0 self-start sm:self-auto">
-            100% Gated & Compliant
-          </span>
+        <div>
+          <h2 className="text-base font-bold text-slate-900 flex items-center space-x-2">
+            <FileText className="w-4 h-4 text-indigo-600" />
+            <span>Activity Audit Trail & Decision Logs</span>
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Verified log of all AI recovery diagnoses, guardrail checks, and payment actions.
+          </p>
         </div>
 
         {/* Search & Filter Controls */}
