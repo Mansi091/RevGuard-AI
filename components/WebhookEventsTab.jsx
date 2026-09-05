@@ -257,7 +257,13 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
                         <span>•</span>
                         <span>{new Date(event.timestamp).toLocaleTimeString('en-IN')}</span>
                         <span>•</span>
-                        <span className="text-rose-500 font-semibold">{event.failureReason}</span>
+                        <span className={`font-semibold ${
+                          event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED'
+                            ? 'text-emerald-600'
+                            : 'text-rose-500'
+                        }`}>
+                          {event.failureReason}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -284,9 +290,25 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
                         <span className="text-[10px] font-bold text-slate-500 uppercase">Order ID</span>
                         <p className="text-xs font-mono text-slate-800 mt-0.5">{event.orderId || 'N/A'}</p>
                       </div>
-                      <div className="p-3 rounded-lg bg-rose-50 border border-rose-200">
-                        <span className="text-[10px] font-bold text-rose-500 uppercase">Error Description</span>
-                        <p className="text-xs text-rose-800 font-semibold mt-0.5">{event.errorDescription}</p>
+                      <div className={`p-3 rounded-lg border ${
+                        event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED'
+                          ? 'bg-emerald-50 border-emerald-200'
+                          : 'bg-rose-50 border-rose-200'
+                      }`}>
+                        <span className={`text-[10px] font-bold uppercase ${
+                          event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED'
+                            ? 'text-emerald-700'
+                            : 'text-rose-500'
+                        }`}>
+                          {event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED' ? 'Payment Status' : 'Error Description'}
+                        </span>
+                        <p className={`text-xs font-semibold mt-0.5 ${
+                          event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED'
+                            ? 'text-emerald-900'
+                            : 'text-rose-800'
+                        }`}>
+                          {event.errorDescription}
+                        </p>
                       </div>
                       <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
                         <span className="text-[10px] font-bold text-slate-500 uppercase">Contact</span>
