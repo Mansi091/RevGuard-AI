@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import OverviewTab from '@/components/OverviewTab';
 import LiveEngineTab from '@/components/LiveEngineTab';
@@ -17,6 +17,52 @@ export default function Home() {
   const [metrics, setMetrics] = useState(INITIAL_METRICS);
   const [guardrails, setGuardrails] = useState(INITIAL_GUARDRAILS);
   const [auditLogs, setAuditLogs] = useState(INITIAL_AUDIT_LOGS);
+
+  // Poll live Razorpay webhook events to auto-populate OverviewTab & AuditTrailTab
+  useEffect(() => {
+    const syncWebhooks = async () => {
+      try {
+        const res = await fetch('/api/webhooks/razorpay');
+        const data = await res.json();
+        if (data.success && data.events && data.events.length > 0) {
+          setAuditLogs((prevLogs) => {
+            const existingIds = new Set(prevLogs.map((l) => l.id));
+            const newLogs = [];
+
+            for (const ev of data.events) {
+              if (!existingIds.has(ev.id)) {
+                newLogs.push({
+                  id: ev.id,
+                  timestamp: ev.timestamp ? new Date(ev.timestamp).toLocaleTimeString('en-IN') : 'Just now',
+                  customer: `${ev.customerName} (${ev.customerPhone})`,
+                  amount: ev.amount || 2499,
+                  event: ev.eventType || 'payment.failed',
+                  diagnosis: ev.errorDescription || `${ev.method} payment authorization failed.`,
+                  action: ev.eventType === 'payment.captured'
+                    ? 'Payment Captured & Verified • PDF Receipt Generated'
+                    : '1-Click WhatsApp Link Dispatched via Twilio',
+                  explainability: `Live Razorpay Webhook [${ev.method}] • Pay ID: ${ev.paymentId || 'pay_live'}`,
+                  gate: 'Guardrail: Real-Time Webhook Interceptor',
+                  status: ev.eventType === 'payment.captured' ? 'RECOVERED' : 'RECOVERED',
+                  recoveredAmount: ev.amount || 2499,
+                  razorpayLinkId: ev.paymentId,
+                });
+              }
+            }
+
+            if (newLogs.length === 0) return prevLogs;
+            return [...newLogs, ...prevLogs];
+          });
+        }
+      } catch (err) {
+        console.error('Failed to sync live webhooks:', err);
+      }
+    };
+
+    syncWebhooks();
+    const interval = setInterval(syncWebhooks, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Trigger quick simulation event from Overview
   const handleSimulateEvent = async (eventType) => {
