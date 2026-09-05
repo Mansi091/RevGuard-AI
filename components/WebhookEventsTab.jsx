@@ -306,6 +306,8 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
                           <p><span className="font-bold text-slate-700">Diagnosis:</span> <span className="text-slate-600">{event.recoveryResult.diagnosis}</span></p>
                           <p><span className="font-bold text-slate-700">Action:</span> <span className="text-emerald-700 font-semibold">{event.recoveryResult.action}</span></p>
                           <p><span className="font-bold text-slate-700">Channel:</span> <span className="text-blue-700">{event.recoveryResult.channel}</span></p>
+                        </div>
+
                         {event.customerPhone && (
                           <div className="pt-2">
                             <a
