@@ -96,8 +96,30 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
     }
   };
 
-  const getStatusBadge = (status, eventType) => {
-    if (eventType === 'payment.captured' || status === 'PAYMENT_CAPTURED' || status === 'CAPTURED') {
+  const isSuccessEvent = (event) => {
+    if (!event) return false;
+    const evtType = (event.eventType || '').toLowerCase();
+    const status = (event.status || '').toUpperCase();
+    const failureReason = (event.failureReason || '').toUpperCase();
+    const desc = (event.errorDescription || '').toLowerCase();
+
+    return (
+      evtType === 'payment.captured' ||
+      evtType === 'payment.authorized' ||
+      evtType === 'order.paid' ||
+      evtType === 'payment_link.paid' ||
+      status === 'PAYMENT_CAPTURED' ||
+      status === 'CAPTURED' ||
+      status === 'AUTHORIZED' ||
+      failureReason === 'PAYMENT_SUCCESS' ||
+      desc.includes('successfully authorized') ||
+      desc.includes('captured by bank') ||
+      desc.includes('payment successful')
+    );
+  };
+
+  const getStatusBadge = (status, eventType, event) => {
+    if (isSuccessEvent(event || { status, eventType })) {
       return (
         <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
           <CheckCircle2 className="w-3 h-3" />
@@ -225,96 +247,102 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
           </div>
         ) : (
           <div className="space-y-2">
-            {events.map((event) => (
-              <div
-                key={event.id}
-                className={`rounded-xl border bg-white shadow-sm transition-all ${
-                  event.recoveryTriggered
-                    ? 'border-emerald-200 hover:border-emerald-300'
-                    : 'border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                {/* Event Header Row */}
-                <button
-                  onClick={() => setExpandedEvent(expandedEvent === event.id ? null : event.id)}
-                  className="w-full p-4 flex items-center justify-between text-left"
+            {events.map((event) => {
+              const isSuccess = isSuccessEvent(event);
+              return (
+                <div
+                  key={event.id}
+                  className={`rounded-xl border bg-white shadow-sm transition-all ${
+                    isSuccess || event.recoveryTriggered
+                      ? 'border-emerald-200 hover:border-emerald-300'
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
                 >
-                  <div className="flex items-center space-x-3 min-w-0">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                      event.recoveryTriggered ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'
-                    }`}>
-                      {event.recoveryTriggered ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
-                    </div>
-
-                    <div className="min-w-0">
-                      <div className="flex items-center space-x-2 flex-wrap gap-y-1">
-                        <span className="text-xs font-bold text-slate-900">{event.customerName}</span>
-                        {getMethodBadge(event.method)}
-                        {getStatusBadge(event.status, event.eventType)}
-                      </div>
-                      <div className="flex items-center space-x-2 mt-0.5 text-[10px] text-slate-400 font-mono">
-                        <span>{event.id}</span>
-                        <span>•</span>
-                        <span>{new Date(event.timestamp).toLocaleTimeString('en-IN')}</span>
-                        <span>•</span>
-                        <span className={`font-semibold ${
-                          event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED'
-                            ? 'text-emerald-600'
-                            : 'text-rose-500'
-                        }`}>
-                          {event.failureReason}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3 shrink-0 ml-2">
-                    <span className="text-sm font-extrabold text-slate-900">₹{event.amount?.toLocaleString('en-IN')}</span>
-                    {expandedEvent === event.id ? (
-                      <ChevronUp className="w-4 h-4 text-slate-400" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-400" />
-                    )}
-                  </div>
-                </button>
-
-                {/* Expanded Detail */}
-                {expandedEvent === event.id && (
-                  <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3 animate-fadeIn">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">Payment ID</span>
-                        <p className="text-xs font-mono text-slate-800 mt-0.5">{event.paymentId || 'N/A'}</p>
-                      </div>
-                      <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">Order ID</span>
-                        <p className="text-xs font-mono text-slate-800 mt-0.5">{event.orderId || 'N/A'}</p>
-                      </div>
-                      <div className={`p-3 rounded-lg border ${
-                        event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED'
-                          ? 'bg-emerald-50 border-emerald-200'
-                          : 'bg-rose-50 border-rose-200'
+                  {/* Event Header Row */}
+                  <button
+                    onClick={() => setExpandedEvent(expandedEvent === event.id ? null : event.id)}
+                    className="w-full p-4 flex items-center justify-between text-left"
+                  >
+                    <div className="flex items-center space-x-3 min-w-0">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                        isSuccess || event.recoveryTriggered
+                          ? 'bg-emerald-100 text-emerald-600'
+                          : 'bg-rose-100 text-rose-600'
                       }`}>
-                        <span className={`text-[10px] font-bold uppercase ${
-                          event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED'
-                            ? 'text-emerald-700'
-                            : 'text-rose-500'
-                        }`}>
-                          {event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED' ? 'Payment Status' : 'Error Description'}
-                        </span>
-                        <p className={`text-xs font-semibold mt-0.5 ${
-                          event.eventType === 'payment.captured' || event.status === 'PAYMENT_CAPTURED'
-                            ? 'text-emerald-900'
-                            : 'text-rose-800'
-                        }`}>
-                          {event.errorDescription}
-                        </p>
+                        {isSuccess || event.recoveryTriggered ? (
+                          <CheckCircle2 className="w-4 h-4" />
+                        ) : (
+                          <AlertTriangle className="w-4 h-4" />
+                        )}
                       </div>
-                      <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">Contact</span>
-                        <p className="text-xs font-mono text-slate-800 mt-0.5">{event.customerPhone || 'N/A'} • {event.customerEmail || 'N/A'}</p>
+
+                      <div className="min-w-0">
+                        <div className="flex items-center space-x-2 flex-wrap gap-y-1">
+                          <span className="text-xs font-bold text-slate-900">{event.customerName}</span>
+                          {getMethodBadge(event.method)}
+                          {getStatusBadge(event.status, event.eventType, event)}
+                        </div>
+                        <div className="flex items-center space-x-2 mt-0.5 text-[10px] text-slate-400 font-mono">
+                          <span>{event.id}</span>
+                          <span>•</span>
+                          <span>{new Date(event.timestamp).toLocaleTimeString('en-IN')}</span>
+                          <span>•</span>
+                          <span className={`font-semibold ${
+                            isSuccess ? 'text-emerald-600' : 'text-rose-500'
+                          }`}>
+                            {event.failureReason}
+                          </span>
+                        </div>
                       </div>
                     </div>
+
+                    <div className="flex items-center space-x-3 shrink-0 ml-2">
+                      <span className="text-sm font-extrabold text-slate-900">₹{event.amount?.toLocaleString('en-IN')}</span>
+                      {expandedEvent === event.id ? (
+                        <ChevronUp className="w-4 h-4 text-slate-400" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-slate-400" />
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Expanded Detail */}
+                  {expandedEvent === event.id && (
+                    <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3 animate-fadeIn">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase">Payment ID</span>
+                          <p className="text-xs font-mono text-slate-800 mt-0.5">{event.paymentId || 'N/A'}</p>
+                        </div>
+                        <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase">Order ID</span>
+                          <p className="text-xs font-mono text-slate-800 mt-0.5">{event.orderId || 'N/A'}</p>
+                        </div>
+                        <div className={`p-3 rounded-lg border ${
+                          isSuccess
+                            ? 'bg-emerald-50 border-emerald-200'
+                            : 'bg-rose-50 border-rose-200'
+                        }`}>
+                          <span className={`text-[10px] font-bold uppercase ${
+                            isSuccess
+                              ? 'text-emerald-700'
+                              : 'text-rose-500'
+                          }`}>
+                            {isSuccess ? 'Payment Status' : 'Error Description'}
+                          </span>
+                          <p className={`text-xs font-semibold mt-0.5 ${
+                            isSuccess
+                              ? 'text-emerald-900'
+                              : 'text-rose-800'
+                          }`}>
+                            {event.errorDescription}
+                          </p>
+                        </div>
+                        <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase">Contact</span>
+                          <p className="text-xs font-mono text-slate-800 mt-0.5">{event.customerPhone || 'N/A'} • {event.customerEmail || 'N/A'}</p>
+                        </div>
+                      </div>
 
                     {/* Recovery Result */}
                     {event.recoveryTriggered && event.recoveryResult && (
@@ -348,7 +376,8 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

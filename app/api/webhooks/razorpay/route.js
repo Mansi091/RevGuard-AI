@@ -76,7 +76,13 @@ export async function POST(request) {
       }
     }
 
-    const isCaptured = eventType === 'payment.captured' || eventType === 'payment.authorized' || eventEntity.status === 'captured' || eventEntity.status === 'authorized';
+    const isCaptured = 
+      eventType === 'payment.captured' || 
+      eventType === 'payment.authorized' || 
+      eventType === 'order.paid' || 
+      eventType === 'payment_link.paid' ||
+      eventEntity.status === 'captured' || 
+      eventEntity.status === 'authorized';
 
     let failureReason = isCaptured ? 'PAYMENT_SUCCESS' : (eventEntity.error_code || eventEntity.error_reason || 'BANK_DECLINED');
     let errorDescription = eventEntity.error_description;
