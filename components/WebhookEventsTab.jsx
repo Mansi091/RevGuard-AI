@@ -96,7 +96,15 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status, eventType) => {
+    if (eventType === 'payment.captured' || status === 'PAYMENT_CAPTURED' || status === 'CAPTURED') {
+      return (
+        <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
+          <CheckCircle2 className="w-3 h-3" />
+          <span>Payment Captured</span>
+        </span>
+      );
+    }
     switch (status) {
       case 'AUTO_RECOVERY_TRIGGERED':
         return (
@@ -251,7 +259,7 @@ export default function WebhookEventsTab({ onWebhookRecovery }) {
                       <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                         <span className="text-xs font-bold text-slate-900">{event.customerName}</span>
                         {getMethodBadge(event.method)}
-                        {getStatusBadge(event.status)}
+                        {getStatusBadge(event.status, event.eventType)}
                       </div>
                       <div className="flex items-center space-x-2 mt-0.5 text-[10px] text-slate-400 font-mono">
                         <span>{event.id}</span>
