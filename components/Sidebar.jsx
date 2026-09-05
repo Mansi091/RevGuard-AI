@@ -16,8 +16,8 @@ export default function Sidebar({ activeTab, setActiveTab, metrics }) {
     <aside className="w-full md:w-64 bg-slate-900 text-slate-100 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col shrink-0 md:min-h-screen">
       {/* Brand */}
       <div className="p-5 border-b border-slate-800 flex items-center space-x-3">
-        <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-          <ShieldCheck className="w-4 h-4" />
+        <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200">
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
         </div>
         <div>
           <h1 className="font-semibold text-sm text-white">RevGuard AI</h1>
@@ -36,14 +36,14 @@ export default function Sidebar({ activeTab, setActiveTab, metrics }) {
               onClick={() => setActiveTab(tab.id)}
               className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-left ${
                 isActive
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                  ? 'bg-slate-800 text-white border border-slate-700 shadow-xs'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <Icon className="w-4 h-4 shrink-0" />
+              <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-slate-200' : 'text-slate-500'}`} />
               <div>
-                <div className="text-xs font-medium">{tab.label}</div>
-                <div className={`text-[10px] ${isActive ? 'text-indigo-200' : 'text-slate-500'}`}>{tab.desc}</div>
+                <div className="text-xs font-semibold">{tab.label}</div>
+                <div className={`text-[10px] ${isActive ? 'text-slate-300' : 'text-slate-500'}`}>{tab.desc}</div>
               </div>
             </button>
           );
@@ -51,16 +51,16 @@ export default function Sidebar({ activeTab, setActiveTab, metrics }) {
       </nav>
 
       {/* Footer metric */}
-      <div className="p-3 m-2 rounded-lg bg-slate-800/50 border border-slate-700">
+      <div className="p-3 m-2 rounded-lg bg-slate-800/60 border border-slate-700">
         <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
           <span>Recovered</span>
-          <span>{metrics?.recoveryRate || 75.7}%</span>
+          <span className="text-emerald-400 font-bold">{metrics?.recoveryRate || 0}%</span>
         </div>
-        <div className="text-base font-semibold text-white">
-          ₹{metrics?.totalRecovered?.toLocaleString('en-IN') || '1,12,400'}
+        <div className="text-base font-semibold text-white font-mono">
+          ₹{metrics?.totalRecovered?.toLocaleString('en-IN') || '0'}
         </div>
         <div className="w-full bg-slate-700 rounded-full h-1 mt-1.5 overflow-hidden">
-          <div className="bg-indigo-500 h-1 rounded-full transition-all" style={{ width: `${metrics?.recoveryRate || 75.7}%` }}></div>
+          <div className="bg-emerald-500 h-1 rounded-full transition-all" style={{ width: `${metrics?.recoveryRate || 0}%` }}></div>
         </div>
       </div>
     </aside>

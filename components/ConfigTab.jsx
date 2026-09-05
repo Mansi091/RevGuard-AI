@@ -19,7 +19,7 @@ export default function ConfigTab({ guardrails, setGuardrails }) {
       {/* Header */}
       <div className="glass-panel p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
         <h2 className="text-base font-bold text-slate-900 flex items-center space-x-2">
-          <Settings className="w-4 h-4 text-indigo-600" />
+          <Settings className="w-4 h-4 text-slate-700" />
           <span>Guardrails & Razorpay API Configuration</span>
         </h2>
       </div>

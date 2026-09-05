@@ -39,13 +39,13 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
       <div className="relative overflow-hidden rounded-xl px-5 py-4 bg-slate-900 text-white shadow-xs border border-slate-800">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h1 className="text-base font-bold text-white tracking-tight flex items-center space-x-2">
-            <Zap className="w-4 h-4 text-indigo-400" />
+            <Zap className="w-4 h-4 text-emerald-400" />
             <span>Autonomous AI Revenue Recovery Engine</span>
           </h1>
           <div className="flex items-center space-x-4 shrink-0">
             <button
               onClick={() => onNavigateTab('live-engine')}
-              className="flex items-center space-x-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-all cursor-pointer"
+              className="flex items-center space-x-1.5 text-xs font-semibold text-slate-200 hover:text-white transition-all cursor-pointer"
             >
               <span>🚀 Run Live Demo →</span>
             </button>
@@ -94,7 +94,7 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
         <div className="glass-panel p-5 rounded-xl border border-slate-200 bg-white shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Recovery Rate</span>
-            <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -137,13 +137,13 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
       {/* Proactive Opportunity Prediction Engine (Pillar 1) */}
       <div className="bg-slate-900 text-white rounded-xl p-4 shadow-xs border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center space-x-3">
-          <div className="w-7 h-7 rounded-lg bg-indigo-600/30 text-indigo-400 flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
               <span className="font-bold text-xs text-white">Proactive Predictor: 2 Cards Expiring in 7 Days</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-900/60 text-indigo-300 font-mono font-semibold border border-indigo-700/50">₹23,998 AT RISK</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono font-semibold border border-slate-700">₹23,998 AT RISK</span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
               Detected 2 upcoming card expiries. Pre-emptive renewal links ready to dispatch.
@@ -153,11 +153,11 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
         <button
           onClick={handleDispatchPredictive}
           disabled={dispatchingPredictive}
-          className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shrink-0 transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-1.5"
+          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold shrink-0 transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-1.5"
         >
           {dispatchingPredictive ? (
             <>
-              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-slate-400" />
               <span>Dispatching...</span>
             </>
           ) : predictiveSuccess ? (
