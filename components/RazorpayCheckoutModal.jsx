@@ -86,64 +86,82 @@ export default function RazorpayCheckoutModal({ isOpen, onClose, customerName, a
                 Select Test Payment Method
               </label>
 
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedMethod('upi')}
-                  className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
-                    selectedMethod === 'upi'
-                      ? 'bg-blue-950/50 border-blue-500 text-white shadow-md'
-                      : 'bg-gray-900/60 border-gray-800 text-gray-400 hover:border-gray-700'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <Smartphone className="w-5 h-5 text-emerald-400" />
-                    <div>
-                      <div className="text-xs font-bold text-gray-200">UPI / QR Code</div>
-                      <div className="text-[11px] text-gray-500">Google Pay, PhonePe, Paytm (Instant Test)</div>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMethod('upi')}
+                    className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
+                      selectedMethod === 'upi'
+                        ? 'bg-blue-950/50 border-blue-500 text-white shadow-md'
+                        : 'bg-gray-900/60 border-gray-800 text-gray-400 hover:border-gray-700'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Smartphone className="w-5 h-5 text-emerald-400" />
+                      <div>
+                        <div className="text-xs font-bold text-gray-200">UPI / QR Code</div>
+                        <div className="text-[11px] text-gray-400">Google Pay, PhonePe, Paytm (Instant Test)</div>
+                      </div>
                     </div>
-                  </div>
-                  <input type="radio" checked={selectedMethod === 'upi'} readOnly className="text-blue-500" />
-                </button>
+                    <input type="radio" checked={selectedMethod === 'upi'} readOnly className="text-blue-500" />
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setSelectedMethod('card')}
-                  className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
-                    selectedMethod === 'card'
-                      ? 'bg-blue-950/50 border-blue-500 text-white shadow-md'
-                      : 'bg-gray-900/60 border-gray-800 text-gray-400 hover:border-gray-700'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <CreditCard className="w-5 h-5 text-cyan-400" />
-                    <div>
-                      <div className="text-xs font-bold text-gray-200">Credit / Debit Card</div>
-                      <div className="text-[11px] text-gray-500">Visa, Mastercard, RuPay Test Cards</div>
+                  {selectedMethod === 'upi' && (
+                    <div className="p-3 bg-gray-900/80 rounded-xl border border-gray-800 flex flex-col items-center space-y-2 text-center animate-fadeIn">
+                      <div className="p-2 bg-white rounded-lg shadow-sm">
+                        <img
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(`upi://pay?pa=razorpay@icici&pn=RazorpayRevGuard&am=${amount || 2499}&cu=INR`)}`}
+                          alt="Razorpay UPI QR Code"
+                          className="w-32 h-32"
+                        />
+                      </div>
+                      <p className="text-[11px] text-gray-300 font-medium">Scan with PhonePe, Google Pay, or Paytm</p>
+                      <div className="flex items-center gap-2 text-[10px]">
+                        <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">
+                          UPI VPA: razorpay@icici
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <input type="radio" checked={selectedMethod === 'card'} readOnly className="text-blue-500" />
-                </button>
+                  )}
 
-                <button
-                  type="button"
-                  onClick={() => setSelectedMethod('netbanking')}
-                  className={`w-full p-3.5 rounded-xl border text-left flex items-center justify-between transition-all ${
-                    selectedMethod === 'netbanking'
-                      ? 'bg-blue-950/50 border-blue-500 text-white shadow-md'
-                      : 'bg-gray-900/60 border-gray-800 text-gray-400 hover:border-gray-700'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <Building2 className="w-5 h-5 text-purple-400" />
-                    <div>
-                      <div className="text-xs font-bold text-gray-200">Netbanking</div>
-                      <div className="text-[11px] text-gray-500">HDFC, ICICI, SBI Test Gateway</div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMethod('card')}
+                    className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
+                      selectedMethod === 'card'
+                        ? 'bg-blue-950/50 border-blue-500 text-white shadow-md'
+                        : 'bg-gray-900/60 border-gray-800 text-gray-400 hover:border-gray-700'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <CreditCard className="w-5 h-5 text-cyan-400" />
+                      <div>
+                        <div className="text-xs font-bold text-gray-200">Credit / Debit Card</div>
+                        <div className="text-[11px] text-gray-400">Visa, Mastercard, RuPay Test Cards</div>
+                      </div>
                     </div>
-                  </div>
-                  <input type="radio" checked={selectedMethod === 'netbanking'} readOnly className="text-blue-500" />
-                </button>
-              </div>
+                    <input type="radio" checked={selectedMethod === 'card'} readOnly className="text-blue-500" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMethod('netbanking')}
+                    className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
+                      selectedMethod === 'netbanking'
+                        ? 'bg-blue-950/50 border-blue-500 text-white shadow-md'
+                        : 'bg-gray-900/60 border-gray-800 text-gray-400 hover:border-gray-700'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Building2 className="w-5 h-5 text-purple-400" />
+                      <div>
+                        <div className="text-xs font-bold text-gray-200">Netbanking</div>
+                        <div className="text-[11px] text-gray-400">HDFC, ICICI, SBI Test Gateway</div>
+                      </div>
+                    </div>
+                    <input type="radio" checked={selectedMethod === 'netbanking'} readOnly className="text-blue-500" />
+                  </button>
+                </div>
             </div>
 
             {/* Pay Button */}

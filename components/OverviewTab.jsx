@@ -5,11 +5,32 @@ import { TrendingUp, ShieldAlert, ArrowUpRight, CheckCircle2, Clock, Zap, Extern
 
 export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNavigateTab }) {
   const [loadingEvent, setLoadingEvent] = useState(null);
+  const [dispatchingPredictive, setDispatchingPredictive] = useState(false);
+  const [predictiveSuccess, setPredictiveSuccess] = useState(false);
 
   const handleSimulate = async (eventType) => {
     setLoadingEvent(eventType);
     await onSimulateEvent(eventType);
     setLoadingEvent(null);
+  };
+
+  const handleDispatchPredictive = async () => {
+    setDispatchingPredictive(true);
+    try {
+      const res = await fetch('/api/recovery/predictive');
+      const data = await res.json();
+      if (data.success && data.atRiskSubscriptions) {
+        for (const sub of data.atRiskSubscriptions) {
+          await onSimulateEvent('subscription.halted');
+        }
+        setPredictiveSuccess(true);
+        setTimeout(() => setPredictiveSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to dispatch predictive links:', err);
+    } finally {
+      setDispatchingPredictive(false);
+    }
   };
 
   return (
@@ -130,10 +151,20 @@ export default function OverviewTab({ metrics, auditLogs, onSimulateEvent, onNav
           </div>
         </div>
         <button
-          onClick={() => onNavigateTab('live-engine')}
-          className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shrink-0 transition-all cursor-pointer"
+          onClick={handleDispatchPredictive}
+          disabled={dispatchingPredictive}
+          className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shrink-0 transition-all cursor-pointer disabled:opacity-50 flex items-center space-x-1.5"
         >
-          Dispatch Links →
+          {dispatchingPredictive ? (
+            <>
+              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              <span>Dispatching...</span>
+            </>
+          ) : predictiveSuccess ? (
+            <span>✓ Pre-emptive Links Sent!</span>
+          ) : (
+            <span>Dispatch Links →</span>
+          )}
         </button>
       </div>
 
