@@ -30,8 +30,8 @@ export async function POST(request) {
             description: description || 'RevGuard AI Revenue Recovery Link',
             customer: {
               name: customerName || 'Valued Customer',
-              contact: customerPhone || '+919876543210',
-              email: customerEmail || 'customer@example.com',
+              contact: customerPhone || '+919820145210',
+              email: customerEmail || 'test.customer@store.in',
             },
             notify: {
               sms: true,

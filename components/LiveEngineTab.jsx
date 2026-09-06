@@ -21,7 +21,7 @@ const LANGUAGES = [
 export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
   const [selectedModule, setSelectedModule] = useState('module1');
   const [customerName, setCustomerName] = useState('Aarav Patel');
-  const [customerPhone, setCustomerPhone] = useState('+919876543210');
+  const [customerPhone, setCustomerPhone] = useState('+919820145210');
   const [amount, setAmount] = useState(2499);
   const [failureCode, setFailureCode] = useState('BAD_REQUEST_PAYMENT_TIMED_OUT');
   const [language, setLanguage] = useState('hi');
@@ -238,7 +238,7 @@ export default function LiveEngineTab({ guardrails, onSimulateComplete }) {
   // Build clean WhatsApp Web desktop deep link
   const buildWhatsAppWebUrl = () => {
     if (!result?.razorpayLink) return '#';
-    const cleanPhone = (customerPhone || '9876543210').replace(/[^0-9]/g, '');
+    const cleanPhone = (customerPhone || '9820145210').replace(/[^0-9]/g, '');
     const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
 
     let messageText = result?.hinglishDialogue;
