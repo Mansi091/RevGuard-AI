@@ -13,7 +13,7 @@ export async function GET() {
       {
         id: 'PRED-8801',
         customerName: 'Karan Malhotra',
-        customerPhone: '+919011037537',
+        customerPhone: '+919876543210',
         serviceName: 'Enterprise SaaS Annual Plan',
         amount: 14999,
         expiryDate: in7Days.toISOString().split('T')[0],
@@ -26,7 +26,7 @@ export async function GET() {
       {
         id: 'PRED-8802',
         customerName: 'Meera Deshmukh',
-        customerPhone: '+918668913018',
+        customerPhone: '+919876543211',
         serviceName: 'Cloud Hosting Subscription',
         amount: 8999,
         expiryDate: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],

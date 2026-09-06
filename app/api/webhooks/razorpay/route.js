@@ -63,12 +63,7 @@ export async function POST(request) {
     if (!customerName || customerName === 'Unknown Customer' || customerName.startsWith('plink_') || customerName.includes('Nykaa')) {
       if (eventEntity.email && !eventEntity.email.includes('example.com') && !eventEntity.email.includes('void')) {
         const emailUser = eventEntity.email.split('@')[0];
-        // Clean up email prefix for clean display (e.g. madgulemansi987 -> Mansi Madgule)
-        if (emailUser.includes('mansi')) {
-          customerName = 'Mansi Madgule';
-        } else {
-          customerName = emailUser.charAt(0).toUpperCase() + emailUser.slice(1);
-        }
+        customerName = emailUser.charAt(0).toUpperCase() + emailUser.slice(1);
       } else if (eventEntity.contact) {
         customerName = `Customer (${eventEntity.contact})`;
       } else {
@@ -103,7 +98,7 @@ export async function POST(request) {
       amount: eventEntity.amount ? eventEntity.amount / 100 : 2499, // Razorpay sends in paise
       currency: eventEntity.currency || 'INR',
       customerName: customerName,
-      customerPhone: eventEntity.contact || '+919011037537',
+      customerPhone: eventEntity.contact || '+919876543210',
       customerEmail: (eventEntity.email && !eventEntity.email.includes('void')) ? eventEntity.email : 'customer@example.com',
       failureReason: failureReason,
       errorDescription: errorDescription,
